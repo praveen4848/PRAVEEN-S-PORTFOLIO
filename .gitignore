@@ -1,0 +1,11 @@
+# Unused duplicate media
+assets/intro_clip.mp4
+assets/intro_video.mp4
+assets/viedo
+
+# OS and Editor metadata
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/

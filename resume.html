@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Praveen Kumar Kakaraparthi — Resume</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #08090B;
+      --card: #111317;
+      --border: rgba(255, 201, 0, 0.2);
+      --text: #F5F3EF;
+      --muted: #A3A19D;
+      --accent: #FFC900;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .resume-wrapper {
+      max-width: 840px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 48px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 201, 0, 0.08);
+    }
+
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .name {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #F5F3EF;
+      letter-spacing: -0.02em;
+    }
+
+    .title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    .contact-info {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: right;
+      line-height: 1.8;
+    }
+
+    .contact-info a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin: 28px 0 16px;
+    }
+
+    .job,
+    .edu,
+    .project-block {
+      margin-bottom: 22px;
+    }
+
+    .job-header,
+    .edu-header,
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: #F5F3EF;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .period,
+    .badge-host {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+    }
+
+    .badge-host {
+      background: rgba(255, 201, 0, 0.15);
+      border: 1px solid var(--accent);
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: var(--accent);
+    }
+
+    .company,
+    .project-tech {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      +-
+    }
+
+    ul {
+      padding-left: 20px;
+      color: #d4d4d8;
+      font-size: 0.9rem;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    .skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skill-chip {
+      background: rgba(255, 201, 0, 0.06);
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: #F5F3EF;
+    }
+
+    .print-bar {
+      max-width: 840px;
+      margin: 0 auto 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #08090B;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      text-decoration: none;
+      display: inline-block;
+      box-shadow: 0 4px 15px rgba(255, 201, 0, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 201, 0, 0.08);
+      color: #F5F3EF;
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+        padding: 0;
+      }
+
+      .resume-wrapper {
+        background: #fff;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        color: #000;
+      }
+
+      .name,
+      .job-header,
+      .edu-header,
+      .section-title,
+      .project-header {
+        color: #000 !important;
+      }
+
+      .title,
+      .company,
+      .period,
+      .contact-info,
+      .project-tech {
+        color: #555 !important;
+      }
+
+      ul {
+        color: #222 !important;
+      }
+
+      .skill-chip {
+        background: #eee !important;
+        color: #000 !important;
+        border: 1px solid #ccc !important;
+      }
+
+      .print-bar {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="print-bar">
+    <a href="index.html" class="btn btn-secondary">‹ Back to Portfolio</a>
+    <a href="resume.pdf" download="Praveen_Kumar_Kakaraparthi_Resume.pdf" class="btn">Download PDF</a>
+    <button onclick="window.print()" class="btn btn-secondary">Print</button>
+  </div>
+
+  <div class="resume-wrapper">
+    <header class="header">
+      <div>
+        <h1 class="name">PRAVEEN KUMAR KAKARAPARTHI</h1>
+        <div class="title">JAVA FULL-STACK DEVELOPER • SOFTWARE ENGINEER GRADUATE (2026)</div>
+        <div style="font-size: 0.85rem; color: var(--muted); margin-top: 4px;">Andhra Pradesh, India</div>
+      </div>
+      <div class="contact-info">
+        <div>Email: <a href="mailto:praveena2z029@gmail.com">praveena2z029@gmail.com</a></div>
+        <div>Phone: +91 9989055955</div>
+        <div>GitHub: <a href="https://github.com/praveen4848" target="_blank" rel="noopener noreferrer">github.com/praveen4848</a> • LinkedIn: <a href="https://www.linkedin.com/in/praveen-kumar-kakaraparthi/" target="_blank" rel="noopener noreferrer">linkedin.com/in/praveen-kumar-kakaraparthi</a></div>
+      </div>
+    </header>
+
+    <section>
+      <h2 class="section-title">Professional Summary</h2>
+      <p style="color: #d4d4d8; font-size: 0.95rem; line-height: 1.7;">
+        Computer Science and Engineering graduate (2026) with hands-on experience building full-stack applications using
+        React, Java, and SQL.
+        Developed database-backed projects with authentication, role-based workflows, and deployment.
+        Seeking a Software Engineer Intern role to apply programming, problem-solving, and application development
+        skills.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="section-title">Technical Skills</h2>
+      <div class="skills-grid">
+        <span class="skill-chip">Programming: Java, SQL</span>
+        <span class="skill-chip">Frontend: HTML, CSS, Tailwind CSS, JavaScript, React, Next.js</span>
+        <span class="skill-chip">Backend: JSP, JSTL, JDBC, Jakarta Servlets, MVC Architecture, Java</span>
+        <span class="skill-chip">Databases: MySQL, TiDB Cloud, PostgreSQL, Supabase</span>
+        <span class="skill-chip">Tools & Platforms: Git, GitHub, Docker, Maven, Apache Tomcat, Render, Vercel</span>
+        <span class="skill-chip">Other: Gemini API, Machine Learning, AI Tools, Codex, Claude Code, REST API</span>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Projects</h2>
+
+      <div class="project-block">
+        <div class="project-header">
+          <span>Gruhu – E-Commerce Platform and AI Interior Stylist</span>
+          <span class="badge-host">RENDER</span>
+        </div>
+        <div class="project-tech">Java, Jakarta Servlets, JSP, JSTL, JDBC, SQL, TiDB Cloud, Gemini API, Docker,
+          Maven, Render</div>
+        <ul>
+          <li>Built a full-stack interior design and e-commerce platform with customer and administrator workflows for
+            managing products, rooms, and orders.</li>
+          <li>Integrated the Gemini API to analyze room images and generate AI-powered interior styling recommendations
+            linked to platform products.</li>
+          <li>Developed backend features using Java, Jakarta Servlets, JSP, JSTL, JDBC, and MVC with service and DAO
+            layers.</li>
+          <li>Used TiDB Cloud for data storage and deployed the application with Apache Tomcat, Maven, Docker, and
+            Render.</li>
+        </ul>
+      </div>
+
+      <div class="project-block">
+        <div class="project-header">
+          <span>TOLET – Property Rental Platform</span>
+          <span class="badge-host">VERCEL</span>
+        </div>
+        <div class="project-tech">React, Next.js, TypeScript, Tailwind CSS, PostgreSQL, Supabase, SQL, Vercel</div>
+        <ul>
+          <li>Developed a rental platform with customer, property-owner, and administrator workflows for property
+            discovery and listing management.</li>
+          <li>Implemented property search, favourites, enquiries, media uploads, availability management, and property
+            details.</li>
+          <li>Built booking availability validation to prevent conflicting reservations.</li>
+          <li>Implemented Supabase Auth and PostgreSQL Row Level Security (RLS) to protect user and property data;
+            deployed the application on Vercel.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Experience</h2>
+      <div class="job">
+        <div class="job-header">
+          <span>Full-Stack Development Training / Internship Program</span>
+          <span class="period">Tap Academy | 2026</span>
+        </div>
+        <ul>
+          <li>Applied Java, SQL, HTML, and CSS in hands-on application development and project-based training.</li>
+          <li>Practiced object-oriented programming, database connectivity, CRUD operations, debugging, version control,
+            and writing maintainable code.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Education</h2>
+      <div class="edu">
+        <div class="edu-header">
+          <span>B.Tech in Computer Science and Engineering</span>
+          <span class="period">2022 – 2026 | CGPA: 7.51/10</span>
+        </div>
+        <div class="company">Kalasalingam Academy of Research and Education, Tamil Nadu</div>
+      </div>
+
+      <div class="edu">
+        <div class="edu-header">
+          <span>Intermediate (Class XII)</span>
+          <span class="period">778/1000 (77.8%)</span>
+        </div>
+        <div class="company">Sasi Junior College</div>
+      </div>
+
+      <div class="edu">
+        <div class="edu-header">
+          <span>Class X</span>
+          <span class="period">533/600 (88.83%)</span>
+        </div>
+        <div class="company">Vignan Cotton School</div>
+      </div>
+    </section>
+  </div>
+</body>
+
+</html>

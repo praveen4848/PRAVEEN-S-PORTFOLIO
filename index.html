@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Praveen Kumar Kakaraparthi — Full-Stack Developer & Software Engineer</title>
+  <meta name="description"
+    content="Portfolio of Praveen Kumar Kakaraparthi. Java Full-Stack Developer & CSE Graduate (2026). Hands-on software builder with Java, SQL, React, Gemini AI, and scalable cloud architectures.">
+
+  <!-- Google Fonts: Instrument Serif, DM Sans, JetBrains Mono (Sarthak Sharma aesthetic) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Favicon: Official PK Chrome Monogram Logo -->
+  <link rel="icon" type="image/png" href="assets/pk_chrome_logo.png">
+
+  <!-- Embedded base64 data for instantaneous local canvas rendering -->
+  <script src="assets/welcome_data.js"></script>
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Dynamic Scroll Progress Bar -->
+  <div id="scroll-progress-bar"></div>
+
+  <!-- Ambient Living Constellation Mesh Canvas -->
+  <canvas id="bg-mesh-canvas"></canvas>
+
+  <!-- ========================================================================
+       SINGLE CELLULAR METALLIC GOLD CURSOR (NO CIRCLE)
+       ======================================================================== -->
+  <div id="custom-cursor-container">
+    <div id="cursor-pointer" class="cursor-pointer-tarot">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="cellularGold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFF7C2" />
+            <stop offset="30%" stop-color="#FFD700" />
+            <stop offset="70%" stop-color="#FFC900" />
+            <stop offset="100%" stop-color="#B38600" />
+          </linearGradient>
+          <filter id="goldGlowFilter" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#FFC900" flood-opacity="0.65" />
+          </filter>
+        </defs>
+        <!-- Razor-sharp Vibrant Gold Arrow Pointer -->
+        <path d="M2 2L9.5 21L13.2 13.5L21 9.5L2 2Z" fill="url(#cellularGold)" stroke="#FFF7C2" stroke-width="1.3"
+          stroke-linejoin="round" filter="url(#goldGlowFilter)" />
+        <!-- Precision Center Spine -->
+        <path d="M2 2L13.2 13.5" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       WELCOME EXPERIENCE (Gray Ball Slow Drop -> Portrait -> PRAVEEN -> PORTFOLIO -> Futuristic Loading Trigger -> Full-Screen Dispersion)
+       ======================================================================== -->
+  <div id="welcome-overlay" title="Click anywhere to enter">
+    <div id="welcome-backdrop" class="welcome-backdrop"></div>
+    <canvas id="intro-canvas"></canvas>
+
+    <div class="welcome-stage">
+      <div class="welcome-typography-wrap">
+        <h1 id="welcome-title-praveen" class="welcome-text-line">PRAVEEN</h1>
+        <div id="welcome-title-portfolio" class="welcome-sub-line">PORTFOLIO</div>
+      </div>
+
+      <!-- Modern Luxury Floating Launch Pill Button -->
+      <button id="welcome-trigger" class="welcome-launch-pill" aria-label="Enter Portfolio">
+        <span class="launch-dot-live"></span>
+        <span class="launch-label">ENTER PORTFOLIO</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="launch-arrow">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Skip Button -->
+    <button id="skip-intro-btn" class="skip-intro-btn">SKIP INTRO ›</button>
+  </div>
+
+  <!-- ========================================================================
+       MAIN SITE HEADER / NAVIGATION (Metallic Chrome Logo + Animated Nav Dock)
+       ======================================================================== -->
+  <header id="site-header" class="site-header">
+    <a href="#home" class="brand-logo" title="Praveen Kumar">
+      <div class="brand-logo-frame">
+        <img src="assets/pk_chrome_logo.png" alt="PK Logo" class="brand-chrome-emblem">
+      </div>
+      <span class="brand-name">Praveen</span>
+    </a>
+
+    <nav class="nav-container">
+      <ul class="nav-links" id="nav-links-list">
+        <li><a href="#about" class="nav-link" data-section="about">ABOUT</a></li>
+        <li><a href="#skills" class="nav-link" data-section="skills">SKILLS</a></li>
+        <li><a href="#process" class="nav-link" data-section="process">PROCESS</a></li>
+        <li><a href="#projects" class="nav-link" data-section="projects">PROJECTS</a></li>
+        <li><a href="#connect" class="nav-link" data-section="connect">CONTACT</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <!-- Ambient Sound FX Toggle -->
+      <button id="sound-toggle-btn" class="sound-toggle-btn active" title="Toggle Sound FX" aria-label="Toggle Sound FX">
+        <i data-lucide="volume-2" style="width: 15px; height: 15px;"></i>
+      </button>
+
+      <!-- Quick Download CV Pill -->
+      <a href="resume.pdf" download="Praveen_Kumar_Kakaraparthi_Resume.pdf" class="nav-cv-pill" title="Download CV (PDF)">
+        <i data-lucide="file-down" style="width: 14px; height: 14px;"></i>
+        <span>CV</span>
+      </a>
+
+      <!-- Luxury Animated Let's Connect CTA -->
+      <a href="#connect" class="nav-connect-pill" id="nav-connect-cta">
+        <span class="connect-beacon" aria-hidden="true">
+          <span class="beacon-core"></span>
+          <span class="beacon-pulse"></span>
+        </span>
+        <span class="connect-text">Let's Connect</span>
+        <span class="connect-arrow">
+          <i data-lucide="arrow-up-right" style="width: 14px; height: 14px;"></i>
+        </span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       MAIN PORTFOLIO BODY
+       ======================================================================== -->
+  <main id="main-content">
+
+    <!-- STATIC RIGHT-MIDDLE FLOATING SOCIAL ICONS (Bare icons only - NO box, NO names) -->
+    <aside id="floating-social-dock" class="floating-social-dock" aria-label="Quick Social Links">
+      <a href="https://github.com/praveen4848" target="_blank" rel="noopener noreferrer" class="dock-social-link" title="GitHub" aria-label="GitHub Profile">
+        <svg class="dock-social-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" stroke-width="1.5"></circle>
+          <path fill="currentColor" stroke="none" d="M12 4.2c-4.31 0-7.8 3.49-7.8 7.8 0 3.45 2.24 6.37 5.34 7.4.39.07.53-.17.53-.38 0-.19-.01-.81-.01-1.47-1.96.36-2.47-.48-2.63-.92-.09-.23-.47-.92-.8-.1.1-.27-.02-.66-.01-.67.62-.01 1.06.57 1.21.8.7 1.19 1.83.85 2.28.65.07-.51.27-.85.5-1.05-1.74-.2-3.56-.87-3.56-3.86 0-.85.3-1.55.8-2.1-.08-.2-.35-1 .08-2.07 0 0 .66-.21 2.15.8.62-.18 1.29-.26 1.95-.26s1.33.09 1.95.26c1.5-1.01 2.15-.8 2.15-.8.43 1.07.16 1.87.08 2.07.5.55.8 1.24.8 2.1 0 3-1.83 3.66-3.57 3.86.28.24.53.72.53 1.45 0 1.05-.01 1.89-.01 2.15 0 .21.14.46.54.38 3.1-1.03 5.34-3.95 5.34-7.4 0-4.31-3.49-7.8-7.8-7.8z"/>
+        </svg>
+      </a>
+      <a href="https://www.linkedin.com/in/praveen-kumar-kakaraparthi/" target="_blank" rel="noopener noreferrer" class="dock-social-link" title="LinkedIn" aria-label="LinkedIn Profile">
+        <svg class="dock-social-svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <rect x="2" y="2" width="20" height="20" rx="4.5" ry="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M7.2 18H4.8v-7.2h2.4V18zM6 9.8c-.8 0-1.4-.6-1.4-1.4 0-.8.6-1.4 1.4-1.4s1.4.6 1.4 1.4c0 .8-.6 1.4-1.4 1.4zm12.8 8.2h-2.4v-3.7c0-1-.4-1.6-1.3-1.6-.7 0-1.1.5-1.3.9v4.4H11.4V10.8h2.3v1c.3-.5 1-1.2 2.2-1.2 1.6 0 2.9 1.1 2.9 3.4V18z"/>
+        </svg>
+      </a>
+      <a href="https://www.instagram.com/p._r._a.v._e._e._n/" target="_blank" rel="noopener noreferrer" class="dock-social-link" title="Instagram" aria-label="Instagram Profile">
+        <svg class="dock-social-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" stroke-width="1.5"></circle>
+          <rect x="7" y="7" width="10" height="10" rx="2.5" ry="2.5"></rect>
+          <path d="M12 14.2a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4z"></path>
+          <circle cx="15.2" cy="8.8" r="0.6" fill="currentColor"></circle>
+        </svg>
+      </a>
+    </aside>
+
+    <!-- HERO SECTION (Prominent Full-Scale Profile Video on Right + Pure Void Black Background) -->
+    <section class="hero-section" id="home">
+      <div class="hero-layout">
+        <!-- Left: Hero Text Content & Actions -->
+        <div class="hero-content-col">
+          <h1 class="hero-title">
+            Praveen Kumar <br>
+            <span class="hero-title-italic">Kakaraparthi.</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            Full-Stack &amp; Software Engineer engineering robust web applications with
+            <strong>Java, SQL, React, and AI tools</strong>. Dedicated to the <strong>Learn-by-Build</strong>
+            discipline—turning complex requirements into scalable, dependable systems.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#projects" class="editorial-btn editorial-btn-primary">
+              <span>Explore Selected Work</span>
+              <i data-lucide="arrow-down-right" style="width: 16px; height: 16px;"></i>
+            </a>
+
+            <!-- Direct Resume Download Button -->
+            <a href="resume.pdf" download="Praveen_Kumar_Kakaraparthi_Resume.pdf"
+              class="editorial-btn editorial-btn-secondary">
+              <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+              <span>Download Resume (PDF)</span>
+            </a>
+
+            <a href="#connect" class="editorial-btn editorial-btn-secondary">
+              <span>Start a Conversation</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Full-Scale Hero Profile Video Stage (No Background / Pure Black Integration) -->
+        <div class="hero-video-col">
+          <div class="hero-video-stage">
+            <video id="hero-intro-video" class="hero-video-bleed" muted loop playsinline preload="auto">
+              <source src="assets/intro_clips.mp4" type="video/mp4">
+              Your browser does not support HTML5 video.
+            </video>
+            <!-- Interactive Video Play / Pause with Sound Button -->
+            <button id="hero-video-play-btn" class="hero-video-play-toggle" title="Play / Pause Video (With Sound)" aria-label="Play or Pause Video">
+              <span class="video-play-icon-box">
+                <i data-lucide="play" id="hero-play-icon" style="width: 16px; height: 16px;"></i>
+              </span>
+              <span class="video-play-label" id="hero-play-label">PLAY</span>
+              <span class="video-sound-bars" id="hero-sound-bars" aria-hidden="true">
+                <span class="sound-bar bar-1"></span>
+                <span class="sound-bar bar-2"></span>
+                <span class="sound-bar bar-3"></span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         SECTION 1: ABOUT ME (First section below Hero)
+         ======================================================================== -->
+    <section class="section-container" id="about">
+      <div class="section-heading-wrapper">
+        <div class="section-pretitle">
+          <span class="section-pretitle-number">01 /</span>
+          <span>THE PERSON BEHIND THE CODE</span>
+        </div>
+        <h2 class="section-title">
+          Driven by Curiosity, <br>
+          <span class="section-title-italic">Validated Through Execution.</span>
+        </h2>
+      </div>
+
+      <div class="about-grid">
+        <!-- Biography & In-depth Discussion -->
+        <div class="editorial-card reveal-card" style="--card-index: 0;">
+          <p class="about-bio-text reveal-child" style="--child-index: 1;">
+            I am <strong>Praveen Kumar Kakaraparthi</strong>, a Computer Science and Engineering graduate (2026) from
+            Kalasalingam Academy. I focus on building reliable, end-to-end applications that bridge responsive client
+            interfaces with robust, database-backed architectures.
+          </p>
+          <p class="about-bio-text reveal-child" style="--child-index: 2;">
+            Anchored in the <strong>Learn-by-Build</strong> discipline, I've built and deployed enterprise platforms like
+            <strong>Gruhu</strong> (AI Interior Stylist on Render) and <strong>TOLET</strong> (Rental Discovery on Vercel),
+            mastering Java, Jakarta Servlets, JDBC, and Gemini Multimodal AI.
+          </p>
+
+          <div class="editorial-quote reveal-child" style="--child-index: 3;">
+            "Working, dependable software that solves real human needs is the ultimate measure of engineering."
+          </div>
+        </div>
+
+        <!-- Quick Specs Table (Special Telemetry Dossier & Typewriter Animation) -->
+        <div class="editorial-card spec-table-card reveal-card" id="spec-academic-card" style="--card-index: 1;">
+          <!-- Sweeping Golden Laser Scanline Beam -->
+          <div class="spec-scanline" aria-hidden="true"></div>
+
+          <!-- Futuristic HUD Header -->
+          <div class="spec-hud-header reveal-child" style="--child-index: 1;">
+            <div class="spec-hud-status">
+              <span class="hud-pulse-dot"></span>
+              <span class="hud-status-text">ACADEMIC DOSSIER // VERIFIED RECORD</span>
+            </div>
+            <span class="spec-hud-code">CSE-2026</span>
+          </div>
+
+          <h3 class="spec-card-heading reveal-child" style="--child-index: 2;">
+            Quick Facts &amp; Academic Record
+          </h3>
+
+          <div class="spec-rows-container">
+            <div class="spec-row reveal-child" style="--child-index: 3;" data-typewrite="Praveen Kumar Kakaraparthi">
+              <span class="spec-label"><i data-lucide="user" class="spec-row-icon" style="width: 14px; height: 14px;"></i> Full Name</span>
+              <span class="spec-val" data-full-text="Praveen Kumar Kakaraparthi">Praveen Kumar Kakaraparthi</span>
+            </div>
+            <div class="spec-row reveal-child" style="--child-index: 4;" data-typewrite="Software Engineer Intern / Full-Stack">
+              <span class="spec-label"><i data-lucide="code" class="spec-row-icon" style="width: 14px; height: 14px;"></i> Target Role</span>
+              <span class="spec-val" data-full-text="Software Engineer Intern / Full-Stack">Software Engineer Intern / Full-Stack</span>
+            </div>
+            <div class="spec-row reveal-child" style="--child-index: 5;" data-typewrite="B.Tech in CSE (2022 — 2026)">
+              <span class="spec-label"><i data-lucide="graduation-cap" class="spec-row-icon" style="width: 14px; height: 14px;"></i> Degree</span>
+              <span class="spec-val" data-full-text="B.Tech in CSE (2022 — 2026)">B.Tech in CSE (2022 — 2026)</span>
+            </div>
+            <div class="spec-row reveal-child" style="--child-index: 6;" data-typewrite="Kalasalingam Academy">
+              <span class="spec-label"><i data-lucide="building" class="spec-row-icon" style="width: 14px; height: 14px;"></i> University</span>
+              <span class="spec-val" data-full-text="Kalasalingam Academy">Kalasalingam Academy</span>
+            </div>
+            <div class="spec-row reveal-child spec-row-highlight" style="--child-index: 7;" data-typewrite="7.51 / 10.0">
+              <span class="spec-label"><i data-lucide="award" class="spec-row-icon" style="width: 14px; height: 14px;"></i> Academic CGPA</span>
+              <span class="spec-val cgpa-highlight" data-full-text="7.51 / 10.0">7.51 / 10.0</span>
+            </div>
+            <div class="spec-row reveal-child" style="--child-index: 8;" data-typewrite="Tap Academy (2026)">
+              <span class="spec-label"><i data-lucide="layers" class="spec-row-icon" style="width: 14px; height: 14px;"></i> Full-Stack Training</span>
+              <span class="spec-val" data-full-text="Tap Academy (2026)">Tap Academy (2026)</span>
+            </div>
+            <div class="spec-row reveal-child" style="--child-index: 9; border-bottom: none;" data-typewrite="praveena2z029@gmail.com">
+              <span class="spec-label"><i data-lucide="mail" class="spec-row-icon" style="width: 14px; height: 14px;"></i> Email</span>
+              <span class="spec-val" data-full-text="praveena2z029@gmail.com">praveena2z029@gmail.com</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         SECTION 2: TECHNICAL ARSENAL (SKILLS)
+         ======================================================================== -->
+    <section class="section-container" id="skills">
+      <div class="section-heading-wrapper">
+        <div class="section-pretitle">
+          <span class="section-pretitle-number">02 /</span>
+          <span>CORE CAPABILITIES</span>
+        </div>
+        <h2 class="section-title">
+          Technical Arsenal: <br>
+          <span class="section-title-italic">Crafted for Reliability & Scale.</span>
+        </h2>
+      </div>
+
+      <div class="skills-grid-wrapper">
+
+        <!-- 1. Programming Languages -->
+        <div class="editorial-card skill-category-card reveal-card" style="--card-index: 0;">
+          <div>
+            <div class="skill-category-header reveal-child" style="--child-index: 1;">
+              <i data-lucide="terminal" style="width: 18px; height: 18px; color: var(--gold-accent);"></i>
+              <h3 class="skill-category-title">Programming Languages</h3>
+            </div>
+            <p class="skill-category-desc reveal-child" style="--child-index: 2;">
+              Core object-oriented and data querying languages used for algorithms, business logic, and backend systems.
+            </p>
+          </div>
+          <div class="tech-tags-group reveal-child" style="--child-index: 3;">
+            <span class="tech-tag featured">Java (Core &amp; OOP)</span>
+            <span class="tech-tag featured">SQL (Structured Query Language)</span>
+            <span class="tech-tag">JavaScript (ES6+)</span>
+            <span class="tech-tag">TypeScript</span>
+          </div>
+        </div>
+
+        <!-- 2. Java Full-Stack & Backend Systems -->
+        <div class="editorial-card skill-category-card reveal-card" style="--card-index: 1;">
+          <div>
+            <div class="skill-category-header reveal-child" style="--child-index: 1;">
+              <i data-lucide="server" style="width: 18px; height: 18px; color: var(--gold-accent);"></i>
+              <h3 class="skill-category-title">Java Full-Stack Backend Architecture</h3>
+            </div>
+            <p class="skill-category-desc reveal-child" style="--child-index: 2;">
+              Server-side enterprise web development, connection management, servlet lifecycle, and decoupled MVC
+              architecture.
+            </p>
+          </div>
+          <div class="tech-tags-group reveal-child" style="--child-index: 3;">
+            <span class="tech-tag featured">Jakarta Servlets</span>
+            <span class="tech-tag featured">JSP (JavaServer Pages)</span>
+            <span class="tech-tag featured">JSTL</span>
+            <span class="tech-tag featured">JDBC &amp; Connection Pooling</span>
+            <span class="tech-tag">MVC Architecture</span>
+            <span class="tech-tag">Service &amp; DAO Layers</span>
+            <span class="tech-tag">Apache Tomcat</span>
+            <span class="tech-tag">Maven</span>
+          </div>
+        </div>
+
+        <!-- 3. Frontend Engineering -->
+        <div class="editorial-card skill-category-card reveal-card" style="--card-index: 2;">
+          <div>
+            <div class="skill-category-header reveal-child" style="--child-index: 1;">
+              <i data-lucide="layout" style="width: 18px; height: 18px; color: var(--gold-accent);"></i>
+              <h3 class="skill-category-title">Frontend Engineering</h3>
+            </div>
+            <p class="skill-category-desc reveal-child" style="--child-index: 2;">
+              Responsive user interfaces, component-driven modularity, and fluid client-side ergonomics.
+            </p>
+          </div>
+          <div class="tech-tags-group reveal-child" style="--child-index: 3;">
+            <span class="tech-tag featured">HTML5 &amp; Semantic Structure</span>
+            <span class="tech-tag featured">CSS3 &amp; Modern Flexbox/Grid</span>
+            <span class="tech-tag featured">Tailwind CSS</span>
+            <span class="tech-tag">JavaScript (DOM / Events)</span>
+            <span class="tech-tag">React.js</span>
+            <span class="tech-tag">Next.js</span>
+            <span class="tech-tag">Responsive Design</span>
+          </div>
+        </div>
+
+        <!-- 4. Databases & Cloud Infrastructure -->
+        <div class="editorial-card skill-category-card reveal-card" style="--card-index: 3;">
+          <div>
+            <div class="skill-category-header reveal-child" style="--child-index: 1;">
+              <i data-lucide="database" style="width: 18px; height: 18px; color: var(--gold-accent);"></i>
+              <h3 class="skill-category-title">Databases &amp; Cloud Storage</h3>
+            </div>
+            <p class="skill-category-desc reveal-child" style="--child-index: 2;">
+              Relational data modeling, ACID transactions, distributed cloud databases, and authorization policies.
+            </p>
+          </div>
+          <div class="tech-tags-group reveal-child" style="--child-index: 3;">
+            <span class="tech-tag featured">MySQL</span>
+            <span class="tech-tag featured">TiDB Cloud (Distributed SQL)</span>
+            <span class="tech-tag">PostgreSQL</span>
+            <span class="tech-tag">Supabase &amp; Database Auth</span>
+            <span class="tech-tag">Row Level Security (RLS)</span>
+            <span class="tech-tag">CRUD Operations</span>
+          </div>
+        </div>
+
+        <!-- 5. AI Tools, Developer Platforms & Deployment -->
+        <div class="editorial-card skill-category-card reveal-card" style="grid-column: span 2; --card-index: 4;">
+          <div>
+            <div class="skill-category-header reveal-child" style="--child-index: 1;">
+              <i data-lucide="cpu" style="width: 18px; height: 18px; color: var(--gold-accent);"></i>
+              <h3 class="skill-category-title">AI Tools, Developer Platforms &amp; Deployment</h3>
+            </div>
+            <p class="skill-category-desc reveal-child" style="--child-index: 2;">
+              AI coding engines, version control platforms, containerization, collaborative design, and cloud hosting infrastructure.
+            </p>
+          </div>
+          <div class="tech-tags-group reveal-child" style="--child-index: 3;">
+            <span class="tech-tag featured">OpenAI Codex</span>
+            <span class="tech-tag featured">Claude Code</span>
+            <span class="tech-tag featured">GitHub Copilot</span>
+            <span class="tech-tag">Git</span>
+            <span class="tech-tag">GitHub</span>
+            <span class="tech-tag featured">Docker</span>
+            <span class="tech-tag">Figma</span>
+            <span class="tech-tag featured">Vercel</span>
+            <span class="tech-tag featured">Render</span>
+            <span class="tech-tag">TiDB Cloud</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         SECTION 3: MY PROCESS (DYNAMIC CYBER-CIRCUIT ROADMAP & SCROLLING PIPELINE)
+         Research → Design → Develop → Deploy
+         ======================================================================== -->
+    <section class="section-container" id="process">
+      <div class="section-heading-wrapper">
+        <div class="section-pretitle">
+          <span class="section-pretitle-number">03 /</span>
+          <span>THE ENGINEERING LIFECYCLE</span>
+        </div>
+        <h2 class="section-title">
+          My Process: <br>
+          <span class="section-title-italic">From Architecture to Zero-Downtime Cloud.</span>
+        </h2>
+      </div>
+
+      <!-- Flowing Step-by-Step Scrolling Circuit Stage -->
+      <div class="flowing-roadmap-stage" id="flowing-roadmap-stage">
+
+        <!-- Stage 01: Research (Left) -->
+        <div class="roadmap-flow-row flow-left">
+          <div class="flowing-step-card reveal-card" data-step="1" id="process-step-1" style="--card-index: 0;">
+            <svg class="step-card-border-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <rect x="0.5" y="0.5" width="99" height="99" rx="4" pathLength="100" class="step-border-rect" />
+            </svg>
+            <div class="flowing-step-header">
+              <span class="flowing-step-idx">01</span>
+              <span class="flowing-step-kicker">Research</span>
+            </div>
+            <h3 class="flowing-step-title">Research &amp; Scoping</h3>
+            <p class="flowing-step-desc">
+              Deconstructing domain requirements, mapping user journeys, and structuring relational entity relationships (ERD) with strict constraint modeling.
+            </p>
+            <div class="flowing-step-badges">
+              <span class="step-badge">Requirements</span>
+              <span class="step-badge">ERD Analysis</span>
+              <span class="step-badge featured">Domain Scoping</span>
+              <span class="step-badge">User Journey</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connecting Conduit: 01 to 02 -->
+        <div class="flowing-connector-stage" aria-hidden="true">
+          <svg class="flowing-connector-svg" viewBox="0 0 800 100" preserveAspectRatio="none">
+            <path class="flow-dashed-path" d="M 280,10 C 280,60 520,40 520,90" fill="none" stroke="rgba(255, 201, 0, 0.45)" stroke-width="2" stroke-dasharray="6 6" />
+            <circle class="flow-travel-node" r="4" fill="#FFC900">
+              <animateMotion path="M 280,10 C 280,60 520,40 520,90" dur="2.4s" repeatCount="indefinite" />
+            </circle>
+          </svg>
+        </div>
+
+        <!-- Stage 02: Design (Right) -->
+        <div class="roadmap-flow-row flow-right">
+          <div class="flowing-step-card reveal-card" data-step="2" id="process-step-2" style="--card-index: 1;">
+            <svg class="step-card-border-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <rect x="0.5" y="0.5" width="99" height="99" rx="4" pathLength="100" class="step-border-rect" />
+            </svg>
+            <div class="flowing-step-header">
+              <span class="flowing-step-idx">02</span>
+              <span class="flowing-step-kicker">Design</span>
+            </div>
+            <h3 class="flowing-step-title">Architecture &amp; Design</h3>
+            <p class="flowing-step-desc">
+              Decoupling MVC tiers, normalizing 3NF relational schemas, structuring clean API contracts, and establishing database Row-Level Security policies.
+            </p>
+            <div class="flowing-step-badges">
+              <span class="step-badge">MVC Tier</span>
+              <span class="step-badge">3NF Schema</span>
+              <span class="step-badge featured">RLS Policies</span>
+              <span class="step-badge">API Contracts</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connecting Conduit: 02 to 03 -->
+        <div class="flowing-connector-stage" aria-hidden="true">
+          <svg class="flowing-connector-svg" viewBox="0 0 800 100" preserveAspectRatio="none">
+            <path class="flow-dashed-path" d="M 520,10 C 520,60 280,40 280,90" fill="none" stroke="rgba(255, 201, 0, 0.45)" stroke-width="2" stroke-dasharray="6 6" />
+            <circle class="flow-travel-node" r="4" fill="#FFC900">
+              <animateMotion path="M 520,10 C 520,60 280,40 280,90" dur="2.4s" repeatCount="indefinite" />
+            </circle>
+          </svg>
+        </div>
+
+        <!-- Stage 03: Develop (Left) -->
+        <div class="roadmap-flow-row flow-left">
+          <div class="flowing-step-card reveal-card" data-step="3" id="process-step-3" style="--card-index: 2;">
+            <svg class="step-card-border-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <rect x="0.5" y="0.5" width="99" height="99" rx="4" pathLength="100" class="step-border-rect" />
+            </svg>
+            <div class="flowing-step-header">
+              <span class="flowing-step-idx">03</span>
+              <span class="flowing-step-kicker">Develop</span>
+            </div>
+            <h3 class="flowing-step-title">Full-Stack &amp; AI Engineering</h3>
+            <p class="flowing-step-desc">
+              Building the full stack with Java, Python and React, and integrating AI features with LLMs and Agentic AI where they add value.
+            </p>
+            <div class="flowing-step-badges">
+              <span class="step-badge">Java 17</span>
+              <span class="step-badge">Jakarta Servlets</span>
+              <span class="step-badge featured">AI Tools</span>
+              <span class="step-badge">React &amp; Next.js</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connecting Conduit: 03 to 04 -->
+        <div class="flowing-connector-stage" aria-hidden="true">
+          <svg class="flowing-connector-svg" viewBox="0 0 800 100" preserveAspectRatio="none">
+            <path class="flow-dashed-path" d="M 280,10 C 280,60 520,40 520,90" fill="none" stroke="rgba(255, 201, 0, 0.45)" stroke-width="2" stroke-dasharray="6 6" />
+            <circle class="flow-travel-node" r="4" fill="#FFC900">
+              <animateMotion path="M 280,10 C 280,60 520,40 520,90" dur="2.4s" repeatCount="indefinite" />
+            </circle>
+          </svg>
+        </div>
+
+        <!-- Stage 04: Deploy (Right) -->
+        <div class="roadmap-flow-row flow-right">
+          <div class="flowing-step-card reveal-card" data-step="4" id="process-step-4" style="--card-index: 3;">
+            <svg class="step-card-border-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <rect x="0.5" y="0.5" width="99" height="99" rx="4" pathLength="100" class="step-border-rect" />
+            </svg>
+            <div class="flowing-step-header">
+              <span class="flowing-step-idx">04</span>
+              <span class="flowing-step-kicker">Deploy</span>
+            </div>
+            <h3 class="flowing-step-title">Production Cloud Deployment</h3>
+            <p class="flowing-step-desc">
+              Testing, optimizing performance and shipping to production with Git-based workflows, Docker containerization, and cloud hosting.
+            </p>
+            <div class="flowing-step-badges">
+              <span class="step-badge">Docker Container</span>
+              <span class="step-badge">Render Engine</span>
+              <span class="step-badge featured">Vercel Edge</span>
+              <span class="step-badge">CI/CD Workflows</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flowing Signature Sign-Off Callout (Like Reference Image) -->
+        <div class="roadmap-ship-callout reveal-child" style="--child-index: 4;">
+          <span class="ship-callout-text">Ready to ship!</span>
+          <i data-lucide="sparkles" style="width: 16px; height: 16px; color: var(--gold-accent);"></i>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         SECTION 4: FEATURED RESUME PROJECTS
+         (SCROLL-ANIMATED FULL-WIDTH SHOWCASE CARDS — NOT SIDE BY SIDE)
+         ======================================================================== -->
+    <section class="section-container" id="projects">
+      <div class="section-heading-wrapper">
+        <div class="section-pretitle">
+          <span class="section-pretitle-number">04 /</span>
+          <span>SELECTED WORK</span>
+        </div>
+        <h2 class="section-title">
+          Production Applications: <br>
+          <span class="section-title-italic">Tested, Verified & Live.</span>
+        </h2>
+      </div>
+
+      <div class="projects-showcase-container">
+
+        <!-- Showcase 01: Gruhu -->
+        <div class="editorial-card project-showcase-card reveal-card" data-project-card="gruhu" style="--card-index: 0;">
+          <div class="project-info-side">
+            <div class="project-top reveal-child" style="--child-index: 1;">
+              <span class="project-platform-badge badge-render">
+                <span class="gold-dot-pill"></span>
+                LIVE ON RENDER
+              </span>
+              <a href="https://gruhu.onrender.com" target="_blank" rel="noopener noreferrer" class="live-link-pill" title="Open live production app">
+                <span>gruhu.onrender.com</span>
+                <i data-lucide="arrow-up-right" style="width: 13px; height: 13px;"></i>
+              </a>
+            </div>
+
+            <h3 class="project-title reveal-child" style="--child-index: 2;">Gruhu — E-Commerce Platform &amp; AI Interior Stylist</h3>
+            <p class="project-desc reveal-child" style="--child-index: 3;">
+              Full-stack Java &amp; Jakarta Servlets interior e-commerce platform with customer/admin workflows, cataloging, and generative room styling recommendations.
+            </p>
+
+            <ul class="project-bullets-list reveal-child" style="--child-index: 4;">
+              <li>Integrated <strong>Google Gemini Multimodal API</strong> to analyze customer room images and generate AI-curated interior recommendations.</li>
+              <li>Engineered backend using <strong>Java, Jakarta Servlets, JSP/JSTL, JDBC, and strict MVC</strong> with isolated DAO service layers.</li>
+              <li>Containerized with <strong>Docker &amp; Maven</strong> on distributed <strong>TiDB Cloud MySQL</strong>, deployed live on <strong>Render</strong>.</li>
+            </ul>
+
+            <div class="project-tech-stack reveal-child" style="--child-index: 5;">
+              <span class="tech-tag featured">Java</span>
+              <span class="tech-tag featured">Jakarta Servlets</span>
+              <span class="tech-tag">JDBC / SQL</span>
+              <span class="tech-tag">TiDB Cloud</span>
+              <span class="tech-tag featured">Docker</span>
+              <span class="tech-tag">Render</span>
+            </div>
+
+            <div class="project-bottom-action reveal-child" style="--child-index: 6;">
+              <a href="https://gruhu.onrender.com" target="_blank" rel="noopener noreferrer"
+                class="editorial-btn editorial-btn-primary" style="padding: 8px 18px; font-size: 0.82rem;">
+                <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+                <span>Launch App</span>
+              </a>
+              <a href="https://github.com/praveen4848/gruhu" target="_blank" rel="noopener noreferrer"
+                class="editorial-btn editorial-btn-secondary" style="padding: 8px 18px; font-size: 0.82rem;" title="View Source on GitHub">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="btn-brand-svg"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                <span>GitHub Code</span>
+              </a>
+              <button class="view-case-study-btn editorial-btn editorial-btn-secondary" data-project="gruhu"
+                style="padding: 8px 16px; font-size: 0.82rem;">
+                <i data-lucide="layers" style="width: 14px; height: 14px;"></i>
+                <span>Architecture</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Side: Live Interactive Browser Mockup Window -->
+          <div class="project-live-side reveal-child" style="--child-index: 4;">
+            <div class="project-browser-frame">
+              <div class="browser-chrome-bar">
+                <div class="browser-window-controls" aria-hidden="true">
+                  <span class="control-dot dot-close"></span>
+                  <span class="control-dot dot-min"></span>
+                  <span class="control-dot dot-max"></span>
+                </div>
+                <div class="browser-address-bar">
+                  <i data-lucide="lock" style="width: 11px; height: 11px; color: #10B981;"></i>
+                  <span class="address-url">gruhu.onrender.com</span>
+                  <span class="live-status-indicator">
+                    <span class="pulse-live-core"></span>
+                    <span>LIVE</span>
+                  </span>
+                </div>
+                <a href="https://gruhu.onrender.com" target="_blank" rel="noopener noreferrer" class="browser-open-btn" title="Open live app in new tab">
+                  <i data-lucide="arrow-up-right" style="width: 13px; height: 13px;"></i>
+                </a>
+              </div>
+              <div class="browser-viewport">
+                <!-- Interactive High-Fidelity UI Mockup Simulation (Always Visible & Crystal-Clear) -->
+                <div class="app-viewport-mockup gruhu-mockup">
+                  <div class="mockup-header-bar">
+                    <div class="mockup-brand-title">
+                      <span class="mockup-dot-accent"></span>
+                      <span>GRUHU.RENDER</span>
+                    </div>
+                    <div class="mockup-search-pill">
+                      <i data-lucide="sparkles" style="width: 10px; height: 10px; color: var(--gold-accent);"></i>
+                      <span>AI Multimodal Interior Styling Studio...</span>
+                    </div>
+                    <span class="mockup-badge-verified">GEMINI AI</span>
+                  </div>
+                  <div class="mockup-card-body">
+                    <div class="mockup-listing-preview gruhu-preview-bg">
+                      <div class="mockup-listing-banner">
+                        <span class="mockup-chip-hot">AI ROOM STYLIST</span>
+                        <span class="mockup-rent-tag">Java Servlets</span>
+                      </div>
+                      <div class="mockup-listing-info">
+                        <div class="mockup-listing-title">Nordic Minimalist Living Room Architecture</div>
+                        <div class="mockup-listing-loc">Multimodal Vision Recommendations • TiDB Cloud</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <iframe src="https://gruhu.onrender.com" class="live-project-iframe" title="Gruhu Live Application" loading="lazy"></iframe>
+                <div class="live-viewport-overlay">
+                  <div class="live-preview-badge">Live Interactive Preview</div>
+                  <a href="https://gruhu.onrender.com" target="_blank" rel="noopener noreferrer" class="live-direct-open-pill">
+                    <span>Open Live Application</span>
+                    <i data-lucide="arrow-up-right" style="width: 12px; height: 12px;"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Showcase 02: TOLET -->
+        <div class="editorial-card project-showcase-card reveal-card" data-project-card="tolet" style="--card-index: 1;">
+          <div class="project-info-side">
+            <div class="project-top reveal-child" style="--child-index: 1;">
+              <span class="project-platform-badge badge-vercel">
+                <span class="gold-dot-pill"></span>
+                LIVE ON VERCEL
+              </span>
+              <a href="https://tolet-opal.vercel.app/" target="_blank" rel="noopener noreferrer" class="live-link-pill" title="Open live production app">
+                <span>tolet-opal.vercel.app</span>
+                <i data-lucide="arrow-up-right" style="width: 13px; height: 13px;"></i>
+              </a>
+            </div>
+
+            <h3 class="project-title reveal-child" style="--child-index: 2;">TOLET — Property Rental Discovery Platform</h3>
+            <p class="project-desc reveal-child" style="--child-index: 3;">
+              High-performance rental discovery platform with tenant/landlord portals, real-time availability validation, and PostgreSQL Row-Level Security.
+            </p>
+
+            <ul class="project-bullets-list reveal-child" style="--child-index: 4;">
+              <li>Engineered booking availability validation algorithms preventing conflicting reservations across property schedules.</li>
+              <li>Enforced role-based tenant/owner governance via <strong>Supabase Auth &amp; PostgreSQL RLS policies</strong>.</li>
+              <li>Constructed responsive UI with <strong>React, Next.js, TypeScript &amp; Tailwind CSS</strong>, deployed live on <strong>Vercel</strong>.</li>
+            </ul>
+
+            <div class="project-tech-stack reveal-child" style="--child-index: 5;">
+              <span class="tech-tag featured">React</span>
+              <span class="tech-tag featured">Next.js</span>
+              <span class="tech-tag">TypeScript</span>
+              <span class="tech-tag">Tailwind CSS</span>
+              <span class="tech-tag featured">PostgreSQL RLS</span>
+              <span class="tech-tag">Vercel</span>
+            </div>
+
+            <div class="project-bottom-action reveal-child" style="--child-index: 6;">
+              <a href="https://tolet-opal.vercel.app/" target="_blank" rel="noopener noreferrer"
+                class="editorial-btn editorial-btn-primary" style="padding: 8px 18px; font-size: 0.82rem;">
+                <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+                <span>Launch App</span>
+              </a>
+              <a href="https://github.com/praveen4848/TOLET" target="_blank" rel="noopener noreferrer"
+                class="editorial-btn editorial-btn-secondary" style="padding: 8px 18px; font-size: 0.82rem;" title="View Source on GitHub">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="btn-brand-svg"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                <span>GitHub Code</span>
+              </a>
+              <button class="view-case-study-btn editorial-btn editorial-btn-secondary" data-project="tolet"
+                style="padding: 8px 16px; font-size: 0.82rem;">
+                <i data-lucide="layers" style="width: 14px; height: 14px;"></i>
+                <span>Architecture</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Side: Live Interactive Browser Mockup Window -->
+          <div class="project-live-side reveal-child" style="--child-index: 4;">
+            <div class="project-browser-frame">
+              <div class="browser-chrome-bar">
+                <div class="browser-window-controls" aria-hidden="true">
+                  <span class="control-dot dot-close"></span>
+                  <span class="control-dot dot-min"></span>
+                  <span class="control-dot dot-max"></span>
+                </div>
+                <div class="browser-address-bar">
+                  <i data-lucide="lock" style="width: 11px; height: 11px; color: #10B981;"></i>
+                  <span class="address-url">tolet-opal.vercel.app</span>
+                  <span class="live-status-indicator">
+                    <span class="pulse-live-core"></span>
+                    <span>LIVE</span>
+                  </span>
+                </div>
+                <a href="https://tolet-opal.vercel.app/" target="_blank" rel="noopener noreferrer" class="browser-open-btn" title="Open live app in new tab">
+                  <i data-lucide="arrow-up-right" style="width: 13px; height: 13px;"></i>
+                </a>
+              </div>
+              <div class="browser-viewport">
+                <!-- Interactive High-Fidelity UI Mockup Simulation (Always Visible & Crystal-Clear) -->
+                <div class="app-viewport-mockup tolet-mockup">
+                  <div class="mockup-header-bar">
+                    <div class="mockup-brand-title">
+                      <span class="mockup-dot-accent"></span>
+                      <span>TOLET.VERCEL</span>
+                    </div>
+                    <div class="mockup-search-pill">
+                      <i data-lucide="search" style="width: 10px; height: 10px; color: var(--gold-accent);"></i>
+                      <span>Search 2BHK / 3BHK flats in Hyderabad...</span>
+                    </div>
+                    <span class="mockup-badge-verified">VERIFIED</span>
+                  </div>
+                  <div class="mockup-card-body">
+                    <div class="mockup-listing-preview">
+                      <div class="mockup-listing-banner">
+                        <span class="mockup-chip-hot">FEATURED PROPERTY</span>
+                        <span class="mockup-rent-tag">₹28,500 / mo</span>
+                      </div>
+                      <div class="mockup-listing-info">
+                        <div class="mockup-listing-title">Modern 3BHK Luxury Gated Residency</div>
+                        <div class="mockup-listing-loc">Financial District, Gachibowli • Ready to Move</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <iframe src="https://tolet-opal.vercel.app/" class="live-project-iframe" title="TOLET Live Application" loading="lazy"></iframe>
+                <div class="live-viewport-overlay">
+                  <div class="live-preview-badge">Live Interactive Preview</div>
+                  <a href="https://tolet-opal.vercel.app/" target="_blank" rel="noopener noreferrer" class="live-direct-open-pill">
+                    <span>Open Live Application</span>
+                    <i data-lucide="arrow-up-right" style="width: 12px; height: 12px;"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         SECTION 5: CONNECT (LET'S WORK TOGETHER — IMAGE 1 STYLE CARDS)
+         ======================================================================== -->
+    <section class="section-container" id="connect">
+      <div class="section-heading-wrapper">
+        <div class="section-pretitle">
+          <span class="section-pretitle-number">05 /</span>
+          <span>START A CONVERSATION</span>
+        </div>
+        <h2 class="section-title">
+          LET'S WORK TOGETHER <br>
+          <span class="section-title-italic">Let's build something useful.</span>
+        </h2>
+      </div>
+
+      <!-- Direct Connection Cards Grid (Image 1 Reference) -->
+      <div class="connect-showcase-container">
+        <div class="connect-cards-row">
+          <!-- Card 1: GitHub (Matches Reference Image 1) -->
+          <div class="connect-action-card reveal-card" style="--card-index: 0;">
+            <div class="connect-card-top-icon" aria-hidden="true">
+              <svg class="connect-brand-svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+            </div>
+            <div class="connect-card-handle">github.com/praveen4848</div>
+            <a href="https://github.com/praveen4848" target="_blank" rel="noopener noreferrer" class="connect-pill-btn">
+              <span>VIEW CODE</span>
+              <i data-lucide="arrow-right" style="width: 12px; height: 12px;"></i>
+            </a>
+          </div>
+
+          <!-- Card 2: LinkedIn (Matches Reference Image 1) -->
+          <div class="connect-action-card reveal-card" style="--card-index: 1;">
+            <div class="connect-card-top-icon" aria-hidden="true">
+              <svg class="connect-brand-svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+            </div>
+            <div class="connect-card-handle">Connect with me</div>
+            <a href="https://www.linkedin.com/in/praveen-kumar-kakaraparthi/" target="_blank" rel="noopener noreferrer" class="connect-pill-btn">
+              <span>OPEN LINKEDIN</span>
+              <i data-lucide="arrow-right" style="width: 12px; height: 12px;"></i>
+            </a>
+          </div>
+
+          <!-- Card 3: Instagram (Matches Reference Image 1) -->
+          <div class="connect-action-card reveal-card" style="--card-index: 2;">
+            <div class="connect-card-top-icon" aria-hidden="true">
+              <svg class="connect-brand-svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+            </div>
+            <div class="connect-card-handle">Follow on Instagram</div>
+            <a href="https://www.instagram.com/p._r._a.v._e._e._n/" target="_blank" rel="noopener noreferrer" class="connect-pill-btn">
+              <span>FOLLOW</span>
+              <i data-lucide="arrow-right" style="width: 12px; height: 12px;"></i>
+            </a>
+          </div>
+
+          <!-- Card 4: Direct Email (Matches Reference Image 1) -->
+          <div class="connect-action-card reveal-card" style="--card-index: 3;">
+            <div class="connect-card-top-icon" aria-hidden="true">
+              <svg class="connect-brand-svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </svg>
+            </div>
+            <div class="connect-card-handle">praveena2z029@gmail.com</div>
+            <a href="mailto:praveena2z029@gmail.com" class="connect-pill-btn">
+              <span>SEND EMAIL</span>
+              <i data-lucide="arrow-right" style="width: 12px; height: 12px;"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Bottom Phone Call Item (Image 1 Style Bottom Phone Call) -->
+        <div class="connect-bottom-phone-bar reveal-child" style="--child-index: 5;">
+          <div class="phone-bar-left">
+            <div class="phone-bar-icon-box">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--gold-accent);">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+            </div>
+            <div class="phone-bar-meta">
+              <span class="phone-bar-tag">DIRECT CELLULAR LINE</span>
+              <span class="phone-bar-number">+91 9989055955</span>
+            </div>
+          </div>
+          <div class="phone-bar-actions">
+            <a href="tel:+919989055955" class="connect-call-pill-btn">
+              <span>CALL DIRECTLY</span>
+              <i data-lucide="phone-call" style="width: 13px; height: 13px;"></i>
+            </a>
+            <a href="resume.pdf" download="Praveen_Kumar_Kakaraparthi_Resume.pdf" class="connect-call-pill-btn secondary" title="Download CV">
+              <span>DOWNLOAD CV</span>
+              <i data-lucide="download" style="width: 13px; height: 13px;"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-copy">
+          © 2026 PRAVEEN KUMAR KAKARAPARTHI. ENGINEERED WITH PASSION &amp; PRECISION. ALL RIGHTS RESERVED.
+        </div>
+
+        <!-- Footer Social Links with Refined Small Vector SVGs -->
+        <div class="footer-social-strip">
+          <a href="https://github.com/praveen4848" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="GitHub">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/praveen-kumar-kakaraparthi/" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="LinkedIn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/p._r._a.v._e._e._n/" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Instagram">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </a>
+        </div>
+
+        <button id="back-to-top-btn" class="back-to-top-btn">
+          <span>Back to Top</span>
+          <i data-lucide="arrow-up" style="width: 14px; height: 14px;"></i>
+        </button>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- ========================================================================
+       MODAL: CASE STUDY DETAILED VIEW (Gruhu & TOLET)
+       ======================================================================== -->
+  <div id="case-study-modal" class="modal-backdrop">
+    <div class="modal-content-card">
+      <button class="modal-close-btn modal-close-trigger" aria-label="Close modal">
+        <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+      </button>
+
+      <div
+        style="font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.15em; color: var(--gold-accent); text-transform: uppercase;"
+        id="modal-case-category">
+        CASE STUDY
+      </div>
+
+      <h2 style="font-family: var(--font-serif); font-size: 2.2rem; color: #FFFFFF; margin: 10px 0 6px;"
+        id="modal-case-title">
+        Project Title
+      </h2>
+
+      <div style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 24px;"
+        id="modal-case-role">
+        Full-Stack Engineer
+      </div>
+
+      <div style="margin-bottom: 24px;">
+        <h4
+          style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">
+          Technologies Deployed
+        </h4>
+        <div class="tech-tags-group" id="modal-case-stack"></div>
+      </div>
+
+      <div style="margin-bottom: 28px;">
+        <h4
+          style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">
+          System Overview & Architecture
+        </h4>
+        <p style="color: var(--text-secondary); line-height: 1.7; font-size: 0.95rem;" id="modal-case-overview"></p>
+      </div>
+
+      <div style="margin-bottom: 28px;">
+        <h4
+          style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">
+          Key Architectural Modules
+        </h4>
+        <ul style="color: var(--text-secondary); line-height: 1.7; font-size: 0.95rem; padding-left: 20px;"
+          id="modal-case-arch"></ul>
+      </div>
+
+      <div
+        style="padding: 16px 20px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: 8px; margin-bottom: 20px;">
+        <div
+          style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">
+          VERIFIED DEPLOYMENT METRICS</div>
+        <div style="font-size: 0.92rem; color: #FFFFFF; font-weight: 500; margin-top: 4px;" id="modal-case-metrics">
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end;">
+        <a href="#" target="_blank" rel="noopener noreferrer" class="editorial-btn editorial-btn-primary"
+          id="modal-case-live-btn" style="padding: 10px 22px; font-size: 0.85rem;">
+          <span>Open Live Application</span>
+          <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL: FULL INTERACTIVE RESUME
+       ======================================================================== -->
+  <div id="resume-modal" class="modal-backdrop">
+    <div class="modal-content-card" style="max-width: 900px;">
+      <button class="modal-close-btn modal-close-trigger" aria-label="Close resume modal">
+        <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+      </button>
+
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 20px; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <h2 style="font-family: var(--font-serif); font-size: 2.2rem; color: #FFFFFF;">PRAVEEN KUMAR KAKARAPARTHI</h2>
+          <p style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
+            JAVA FULL-STACK DEVELOPER • CSE GRADUATE (2026) • ANDHRA PRADESH
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <!-- Direct download of original PDF -->
+          <a href="resume.pdf" download="Praveen_Kumar_Kakaraparthi_Resume.pdf"
+            class="editorial-btn editorial-btn-primary" style="padding: 8px 18px; font-size: 0.8rem;">
+            <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+            <span>Download PDF</span>
+          </a>
+          <button class="editorial-btn editorial-btn-secondary" onclick="window.print()"
+            style="padding: 8px 16px; font-size: 0.8rem;">
+            <i data-lucide="printer" style="width: 14px; height: 14px;"></i>
+            <span>Print</span>
+          </button>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+        <div>
+          <h4
+            style="font-family: var(--font-sans); font-size: 1.05rem; font-weight: 600; color: #FFFFFF; margin-bottom: 10px;">
+            Professional Summary</h4>
+          <p style="color: var(--text-secondary); line-height: 1.7; font-size: 0.95rem;">
+            Computer Science and Engineering graduate (2026) with hands-on experience building full-stack applications
+            using React, Java, and SQL.
+            Developed database-backed projects with authentication, role-based workflows, and deployment.
+            Seeking a Software Engineer Intern role to apply programming, problem-solving, and application development
+            skills.
+          </p>
+        </div>
+
+        <div>
+          <h4
+            style="font-family: var(--font-sans); font-size: 1.05rem; font-weight: 600; color: #FFFFFF; margin-bottom: 10px;">
+            Technical Skills</h4>
+          <div class="tech-tags-group">
+            <span class="tech-tag featured">Java</span>
+            <span class="tech-tag featured">SQL</span>
+            <span class="tech-tag featured">Jakarta Servlets</span>
+            <span class="tech-tag">JSP & JSTL</span>
+            <span class="tech-tag">JDBC</span>
+            <span class="tech-tag">MySQL</span>
+            <span class="tech-tag">TiDB Cloud</span>
+            <span class="tech-tag">PostgreSQL</span>
+            <span class="tech-tag featured">React.js</span>
+            <span class="tech-tag">Next.js</span>
+            <span class="tech-tag">Tailwind CSS</span>
+            <span class="tech-tag featured">Gemini API</span>
+            <span class="tech-tag">Docker</span>
+            <span class="tech-tag">Maven</span>
+            <span class="tech-tag">Render</span>
+            <span class="tech-tag">Vercel</span>
+          </div>
+        </div>
+
+        <div>
+          <h4
+            style="font-family: var(--font-sans); font-size: 1.05rem; font-weight: 600; color: #FFFFFF; margin-bottom: 10px;">
+            Featured Resume Projects</h4>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="border-left: 2px solid #FFFFFF; padding-left: 16px;">
+              <div
+                style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">
+                <span>GRUHU — E-COMMERCE PLATFORM & AI INTERIOR STYLIST</span>
+                <span style="color: var(--gold-accent);">RENDER DEPLOYMENT</span>
+              </div>
+              <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-top: 6px;">
+                Built full-stack interior design platform in Java, Servlets, JSP, JDBC, MVC with Gemini API room image
+                analysis and TiDB Cloud database.
+              </p>
+            </div>
+
+            <div style="border-left: 2px solid #FFFFFF; padding-left: 16px;">
+              <div
+                style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">
+                <span>TOLET — PROPERTY RENTAL PLATFORM</span>
+                <span style="color: var(--gold-accent);">VERCEL DEPLOYMENT</span>
+              </div>
+              <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-top: 6px;">
+                Constructed rental platform in React, Next.js, TypeScript, Tailwind CSS, Supabase Auth and PostgreSQL
+                Row Level Security.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h4
+            style="font-family: var(--font-sans); font-size: 1.05rem; font-weight: 600; color: #FFFFFF; margin-bottom: 10px;">
+            Training & Experience</h4>
+          <div style="border-left: 2px solid var(--border-subtle); padding-left: 16px;">
+            <div
+              style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">
+              <span>TAP ACADEMY</span>
+              <span>2026</span>
+            </div>
+            <div style="font-weight: 600; color: #FFFFFF; font-size: 0.95rem; margin-top: 2px;">Full-Stack Development
+              Training / Internship Program</div>
+            <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6; margin-top: 4px;">
+              Applied Java, SQL, HTML, and CSS in hands-on application development, OOP, database connectivity, and
+              debugging.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h4
+            style="font-family: var(--font-sans); font-size: 1.05rem; font-weight: 600; color: #FFFFFF; margin-bottom: 10px;">
+            Education</h4>
+          <div
+            style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; color: var(--text-secondary);">
+            <div><strong>B.Tech in CSE (2022–2026):</strong> Kalasalingam Academy of Research and Education (CGPA:
+              7.51/10)</div>
+            <div><strong>Intermediate (Class XII):</strong> Sasi Junior College (77.8%)</div>
+            <div><strong>Class X:</strong> Vignan Cotton School (88.83%)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="particles.js"></script>
+  <script src="main.js"></script>
+</body>
+
+</html>
