@@ -245,8 +245,8 @@
   }
 
   // ==========================================================================
-  // 3. ANIMATION 1: SPACE ASTEROIDS & COSMIC DUST PARTICLES (#bg-mesh-canvas)
-  // Subtle, minimal, aesthetic deep-space drifting micro-asteroids & stardust
+  // 3. ANIMATION 1: 3D SPACE ZOOM MOTION BACKGROUND (#bg-mesh-canvas)
+  // Deep space warp zoom with very small delicate starlight points & mouse parallax
   // ==========================================================================
   const meshCanvas = document.getElementById('bg-mesh-canvas');
   if (meshCanvas) {
@@ -259,278 +259,110 @@
       sHeight = meshCanvas.height = window.innerHeight;
     });
 
-    // 1. Subtle Micro-Asteroids (floating irregular polygonal space rocks)
-    const asteroids = [];
-    const NUM_ASTEROIDS = 36;
+    // 3D Space Zoom Starfield
+    const NUM_ZOOM_STARS = 450;
+    const MAX_DEPTH = 1400;
+    const zoomStars = [];
+    const zoomSpeed = 2.0;
 
-    class Asteroid {
-      constructor() {
-        this.reset(true);
-      }
-
-      reset(init = false) {
-        this.x = init ? Math.random() * sWidth : (Math.random() > 0.5 ? -30 : sWidth + 30);
-        this.y = Math.random() * sHeight;
-        this.radius = Math.random() * 3.2 + 1.8; // Small, subtle
-        this.vx = (Math.random() - 0.5) * 0.35;
-        this.vy = (Math.random() - 0.5) * 0.3;
-        this.angle = Math.random() * Math.PI * 2;
-        this.angularVelocity = (Math.random() - 0.5) * 0.012;
-        this.alpha = Math.random() * 0.35 + 0.2;
-        this.isGoldTinted = Math.random() < 0.12;
-
-        // Generate irregular rock vertices
-        this.numVertices = Math.floor(Math.random() * 3) + 5;
-        this.vertexOffsets = [];
-        for (let i = 0; i < this.numVertices; i++) {
-          this.vertexOffsets.push(0.72 + Math.random() * 0.48);
-        }
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.angle += this.angularVelocity;
-
-        // Wrap around screen edges
-        if (this.x < -40) this.x = sWidth + 40;
-        if (this.x > sWidth + 40) this.x = -40;
-        if (this.y < -40) this.y = sHeight + 40;
-        if (this.y > sHeight + 40) this.y = -40;
-      }
-
-      draw() {
-        sctx.save();
-        sctx.translate(this.x, this.y);
-        sctx.rotate(this.angle);
-
-        sctx.beginPath();
-        for (let i = 0; i < this.numVertices; i++) {
-          const a = (i / this.numVertices) * Math.PI * 2;
-          const r = this.radius * this.vertexOffsets[i];
-          const px = Math.cos(a) * r;
-          const py = Math.sin(a) * r;
-          if (i === 0) sctx.moveTo(px, py);
-          else sctx.lineTo(px, py);
-        }
-        sctx.closePath();
-
-        // Shaded surface facet
-        if (this.isGoldTinted) {
-          sctx.fillStyle = `rgba(255, 201, 0, ${this.alpha * 0.8})`;
-          sctx.strokeStyle = `rgba(255, 201, 0, ${this.alpha * 1.2})`;
-        } else {
-          sctx.fillStyle = `rgba(148, 163, 184, ${this.alpha * 0.6})`;
-          sctx.strokeStyle = `rgba(226, 232, 240, ${this.alpha * 0.9})`;
-        }
-        sctx.lineWidth = 0.8;
-        sctx.fill();
-        sctx.stroke();
-
-        sctx.restore();
-      }
-    }
-
-    for (let i = 0; i < NUM_ASTEROIDS; i++) {
-      asteroids.push(new Asteroid());
-    }
-
-    // 2. Cosmic Tiny Dust Particles, Harmonic Waves & Clean Constellation Field
-    const stardust = [];
-    const NUM_DUST = 110;
-    let canvasMouseX = -1000;
-    let canvasMouseY = -1000;
+    let targetParallaxX = 0;
+    let targetParallaxY = 0;
+    let parallaxX = 0;
+    let parallaxY = 0;
 
     window.addEventListener('mousemove', (e) => {
-      canvasMouseX = e.clientX;
-      canvasMouseY = e.clientY;
+      targetParallaxX = (e.clientX - sWidth / 2) * 0.12;
+      targetParallaxY = (e.clientY - sHeight / 2) * 0.12;
     });
 
-    window.addEventListener('mouseleave', () => {
-      canvasMouseX = -1000;
-      canvasMouseY = -1000;
-    });
+    class SpaceZoomStar {
+      constructor(randomZ = true) {
+        this.reset(randomZ);
+      }
 
-    class DustParticle {
-      constructor() {
-        this.x = Math.random() * sWidth;
-        this.y = Math.random() * sHeight;
-        this.radius = Math.random() * 1.2 + 0.45;
-        this.vx = (Math.random() - 0.5) * 0.22;
-        this.vy = (Math.random() - 0.5) * 0.22;
-        this.baseAlpha = Math.random() * 0.45 + 0.2;
-        this.pulseSpeed = Math.random() * 0.02 + 0.008;
-        this.pulsePhase = Math.random() * Math.PI * 2;
-        this.wavePhase = Math.random() * Math.PI * 2;
-        this.isGold = Math.random() < 0.12;
+      reset(randomZ = false) {
+        // Broad distribution across deep space frustum
+        this.x = (Math.random() - 0.5) * (sWidth * 2.8);
+        this.y = (Math.random() - 0.5) * (sHeight * 2.8);
+        this.z = randomZ ? Math.random() * MAX_DEPTH + 10 : MAX_DEPTH;
+        this.baseRadius = Math.random() * 0.65 + 0.45; // Very small light: 0.45px to 1.1px
+        this.twinklePhase = Math.random() * Math.PI * 2;
+        this.twinkleSpeed = Math.random() * 0.025 + 0.015;
       }
 
       update() {
-        this.x += this.vx;
-        this.y += this.vy + Math.sin(this.wavePhase) * 0.1;
-        this.pulsePhase += this.pulseSpeed;
-        this.wavePhase += 0.015;
+        this.z -= zoomSpeed;
+        this.twinklePhase += this.twinkleSpeed;
 
-        // Subtle gentle drift away from cursor if very close
-        if (canvasMouseX > 0 && canvasMouseY > 0) {
-          const dx = this.x - canvasMouseX;
-          const dy = this.y - canvasMouseY;
-          const distSq = dx * dx + dy * dy;
-          if (distSq < 6400 && distSq > 50) { // 80px
-            const dist = Math.sqrt(distSq);
-            const force = (1 - dist / 80) * 0.5;
-            this.x += (dx / dist) * force;
-            this.y += (dy / dist) * force;
-          }
+        // When passing camera plane, recycle to deep space
+        if (this.z <= 12) {
+          this.reset(false);
         }
-
-        if (this.x < 0) this.x = sWidth;
-        if (this.x > sWidth) this.x = 0;
-        if (this.y < 0) this.y = sHeight;
-        if (this.y > sHeight) this.y = 0;
       }
 
       draw() {
-        const currentAlpha = Math.max(0.1, this.baseAlpha + Math.sin(this.pulsePhase) * 0.22);
+        const focalLength = 400;
+        const scale = focalLength / Math.max(1, this.z);
 
-        sctx.save();
-        sctx.beginPath();
-        sctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        const screenX = sWidth / 2 + this.x * scale + parallaxX;
+        const screenY = sHeight / 2 + this.y * scale + parallaxY;
 
-        if (this.isGold) {
-          sctx.fillStyle = `rgba(255, 201, 0, ${currentAlpha * 0.75})`;
-        } else {
-          sctx.fillStyle = `rgba(245, 243, 239, ${currentAlpha * 0.85})`;
+        // Skip if out of screen bounds
+        if (screenX < -20 || screenX > sWidth + 20 || screenY < -20 || screenY > sHeight + 20) {
+          return;
         }
 
+        // Distance attenuation
+        const depthRatio = 1 - this.z / MAX_DEPTH; // 0 (far) to 1 (near)
+        const size = Math.max(0.35, Math.min(1.35, this.baseRadius * (scale * 0.95 + 0.5)));
+        const twinkle = 0.8 + 0.2 * Math.sin(this.twinklePhase);
+        const alpha = Math.max(0.12, Math.min(0.85, (depthRatio * 0.68 + 0.15) * twinkle));
+
+        // For nearby zooming stars, draw delicate micro light-streak pointing toward center
+        if (this.z < 380) {
+          const prevZ = this.z + zoomSpeed * 2.2;
+          const prevScale = focalLength / prevZ;
+          const prevX = sWidth / 2 + this.x * prevScale + parallaxX;
+          const prevY = sHeight / 2 + this.y * prevScale + parallaxY;
+
+          sctx.save();
+          sctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.5})`;
+          sctx.lineWidth = Math.max(0.4, size * 0.7);
+          sctx.beginPath();
+          sctx.moveTo(prevX, prevY);
+          sctx.lineTo(screenX, screenY);
+          sctx.stroke();
+          sctx.restore();
+        }
+
+        // Very small pinpoint light star
+        sctx.save();
+        sctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        sctx.beginPath();
+        sctx.arc(screenX, screenY, size, 0, Math.PI * 2);
         sctx.fill();
         sctx.restore();
       }
     }
 
-    for (let i = 0; i < NUM_DUST; i++) {
-      stardust.push(new DustParticle());
+    for (let i = 0; i < NUM_ZOOM_STARS; i++) {
+      zoomStars.push(new SpaceZoomStar(true));
     }
 
-    // 3. Graceful, Restrained Shooting Stars
-    const shootingStars = [];
-    class ShootingStar {
-      constructor() {
-        this.reset();
-      }
-
-      reset() {
-        const angleVariants = [
-          Math.PI / 4 + (Math.random() - 0.5) * 0.12,
-          Math.PI / 3 + (Math.random() - 0.5) * 0.1
-        ];
-        this.angle = angleVariants[Math.floor(Math.random() * angleVariants.length)];
-        this.x = Math.random() * (sWidth * 0.75);
-        this.y = Math.random() * (sHeight * 0.4);
-        this.length = Math.random() * 70 + 60;
-        this.speed = Math.random() * 8 + 11;
-        this.vx = Math.cos(this.angle) * this.speed;
-        this.vy = Math.sin(this.angle) * this.speed;
-        this.life = 0;
-        this.maxLife = Math.random() * 40 + 30;
-        this.isDying = false;
-        this.color = Math.random() > 0.4 ? '#FFF7C2' : '#FFC900';
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.life++;
-        if (this.life >= this.maxLife || this.x > sWidth + 100 || this.y > sHeight + 100) {
-          this.isDying = true;
-        }
-      }
-
-      draw() {
-        const progress = this.life / this.maxLife;
-        const alpha = progress < 0.15 ? progress / 0.15 : Math.max(0, 1 - (progress - 0.15) / 0.85);
-        if (alpha <= 0) return;
-
-        const tailX = this.x - Math.cos(this.angle) * this.length;
-        const tailY = this.y - Math.sin(this.angle) * this.length;
-
-        const grad = sctx.createLinearGradient(tailX, tailY, this.x, this.y);
-        grad.addColorStop(0, 'rgba(255, 201, 0, 0)');
-        grad.addColorStop(0.6, `rgba(255, 201, 0, ${alpha * 0.35})`);
-        grad.addColorStop(1, `rgba(255, 255, 255, ${alpha * 0.85})`);
-
-        sctx.save();
-        sctx.strokeStyle = grad;
-        sctx.lineWidth = 1.3;
-        sctx.beginPath();
-        sctx.moveTo(tailX, tailY);
-        sctx.lineTo(this.x, this.y);
-        sctx.stroke();
-
-        // Subtle, clean pinpoint head (NO heavy glow/shadowBlur)
-        sctx.fillStyle = this.color;
-        sctx.beginPath();
-        sctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2);
-        sctx.fill();
-        sctx.restore();
-      }
-    }
-
-    let nextShootingStarTime = Date.now() + 2000;
-
-    function renderSpaceAsteroids() {
-      requestAnimationFrame(renderSpaceAsteroids);
+    function renderSpaceZoomBackground() {
+      requestAnimationFrame(renderSpaceZoomBackground);
       sctx.clearRect(0, 0, sWidth, sHeight);
 
-      // Draw Stardust Particles
-      for (let i = 0; i < stardust.length; i++) {
-        stardust[i].update();
-        stardust[i].draw();
-      }
+      // Smooth parallax easing
+      parallaxX += (targetParallaxX - parallaxX) * 0.04;
+      parallaxY += (targetParallaxY - parallaxY) * 0.04;
 
-      // Draw Clean Proximity Constellation Lines (ONLY star-to-star, NEVER to cursor!)
-      sctx.lineWidth = 0.55;
-      for (let i = 0; i < stardust.length; i++) {
-        for (let j = i + 1; j < stardust.length; j++) {
-          const dx = stardust[i].x - stardust[j].x;
-          const dy = stardust[i].y - stardust[j].y;
-          const distSq = dx * dx + dy * dy;
-          if (distSq < 7225) { // 85 * 85
-            const dist = Math.sqrt(distSq);
-            const lineAlpha = (1 - dist / 85) * 0.14;
-            sctx.strokeStyle = `rgba(226, 232, 240, ${lineAlpha})`;
-            sctx.beginPath();
-            sctx.moveTo(stardust[i].x, stardust[i].y);
-            sctx.lineTo(stardust[j].x, stardust[j].y);
-            sctx.stroke();
-          }
-        }
-      }
-
-      // Periodic Shooting Stars (Clean, graceful, occasional)
-      const now = Date.now();
-      if (now > nextShootingStarTime) {
-        if (shootingStars.length < 2) {
-          shootingStars.push(new ShootingStar());
-        }
-        nextShootingStarTime = now + Math.random() * 2500 + 2200;
-      }
-
-      for (let i = shootingStars.length - 1; i >= 0; i--) {
-        shootingStars[i].update();
-        shootingStars[i].draw();
-        if (shootingStars[i].isDying) {
-          shootingStars.splice(i, 1);
-        }
-      }
-
-      // Draw Floating Geometric Asteroids
-      for (let i = 0; i < asteroids.length; i++) {
-        asteroids[i].update();
-        asteroids[i].draw();
+      for (let i = 0; i < zoomStars.length; i++) {
+        zoomStars[i].update();
+        zoomStars[i].draw();
       }
     }
-    renderSpaceAsteroids();
+    renderSpaceZoomBackground();
   }
 
   // ==========================================================================

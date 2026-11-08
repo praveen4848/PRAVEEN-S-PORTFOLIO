@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Syncopate:wght@700&family=Syne:wght@800&display=swap"
     rel="stylesheet">
 
   <!-- Lucide Icons CDN -->
@@ -63,31 +63,36 @@
   </div>
 
   <!-- ========================================================================
-       WELCOME EXPERIENCE (Gray Ball Slow Drop -> Portrait -> PRAVEEN -> PORTFOLIO -> Futuristic Loading Trigger -> Full-Screen Dispersion)
+       WELCOME EXPERIENCE (Postminimal Tesseract 4D Sphere Simulation)
+       Exact Colors: #121214, #ffe5cf, #b7cbf2, #f4f4f4
+       No logo — Just PRAVEEN & PORTFOLIO with interactive 4D Sphere behind
        ======================================================================== -->
   <div id="welcome-overlay" title="Click anywhere to enter">
     <div id="welcome-backdrop" class="welcome-backdrop"></div>
     <canvas id="intro-canvas"></canvas>
 
-    <div class="welcome-stage">
-      <div class="welcome-typography-wrap">
-        <h1 id="welcome-title-praveen" class="welcome-text-line">PRAVEEN</h1>
-        <div id="welcome-title-portfolio" class="welcome-sub-line">PORTFOLIO</div>
+    <div class="welcome-stage welcome-stage-tesseract">
+      <!-- Minimalist Typography: Just Name and Portfolio (No Logo) -->
+      <div class="welcome-typography-wrap-tesseract">
+        <h1 id="welcome-title-praveen" class="welcome-text-line-tesseract">PRAVEEN</h1>
+        <div id="welcome-title-portfolio" class="welcome-sub-line-tesseract">PORTFOLIO</div>
       </div>
 
-      <!-- Modern Luxury Floating Launch Pill Button -->
-      <button id="welcome-trigger" class="welcome-launch-pill" aria-label="Enter Portfolio">
-        <span class="launch-dot-live"></span>
+      <!-- Postminimal Subtle Action Button -->
+      <button id="welcome-trigger" class="welcome-launch-pill-tesseract" aria-label="Enter Portfolio">
+        <span class="launch-dot-tesseract"></span>
         <span class="launch-label">ENTER PORTFOLIO</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="launch-arrow">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="launch-arrow">
           <line x1="5" y1="12" x2="19" y2="12"></line>
           <polyline points="12 5 19 12 12 19"></polyline>
         </svg>
       </button>
+
+      <div class="welcome-hint-tesseract">DRAG TO ROTATE 4D SPHERE • CLICK TO ENTER</div>
     </div>
 
     <!-- Skip Button -->
-    <button id="skip-intro-btn" class="skip-intro-btn">SKIP INTRO ›</button>
+    <button id="skip-intro-btn" class="skip-intro-btn">SKIP ›</button>
   </div>
 
   <!-- ========================================================================

@@ -152,7 +152,7 @@ body {
 #welcome-overlay {
   position: fixed;
   inset: 0;
-  background-color: var(--bg-void);
+  background-color: #121214;
   z-index: 9000;
   display: flex;
   flex-direction: column;
@@ -160,8 +160,12 @@ body {
   align-items: center;
   transition: opacity 0.85s var(--ease-out-expo), visibility 0.85s;
   overflow: hidden;
-  cursor: pointer;
+  cursor: grab;
   user-select: none;
+}
+
+#welcome-overlay:active {
+  cursor: grabbing;
 }
 
 #welcome-overlay.hidden {
@@ -204,67 +208,149 @@ body {
   pointer-events: none;
 }
 
-.welcome-stage {
+/* ==========================================================================
+   POSTMINIMAL TESSERACT 4D SPHERE THEME
+   Exact Colors from https://tesseract.postminimal.agency:
+   --ink: #121214 (Void canvas)
+   --paper: #f4f4f4 (Crisp off-white typography)
+   --ana: #ffe5cf (Warm champagne peach sphere glow)
+   --kata: #b7cbf2 (Cool celestial lavender-blue sphere glow)
+   ========================================================================== */
+.welcome-stage-tesseract {
   position: relative;
-  z-index: 3;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 20px;
+  padding: 24px;
+  max-width: 900px;
+  pointer-events: none; /* Allows mouse dragging the 4D sphere through the stage */
 }
 
-.welcome-typography-wrap {
+.welcome-typography-wrap-tesseract {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
-/* Exact Serif Typography matching Image 2 — Falling Slowly from above */
-.welcome-text-line {
-  font-family: var(--font-serif);
-  font-size: 5.6rem;
-  font-weight: 400;
-  letter-spacing: 0.18em;
+/* Postminimal Title: Pure Name matching CHRISTEN bold extended geometry in Brushed Silver Chrome */
+.welcome-text-line-tesseract {
+  font-family: 'Syncopate', sans-serif;
+  font-size: clamp(2.8rem, 7.5vw, 5.8rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #FFFFFF;
-  opacity: 0;
-  transform: translateY(-40px) scale(0.96);
-  filter: blur(8px);
-  transition: transform 1.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.4s ease, filter 1.4s ease;
   line-height: 1;
-  text-shadow: 0 4px 35px rgba(0, 0, 0, 0.95);
-  will-change: transform, opacity, filter;
+  margin-bottom: 14px;
+
+  /* Multi-tone Liquid Silver Metallic Sheen */
+  background: linear-gradient(
+    115deg,
+    #94A3B8 0%,
+    #E2E8F0 18%,
+    #FFFFFF 35%,
+    #94A3B8 52%,
+    #F8FAFC 68%,
+    #CBD5E1 82%,
+    #64748B 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: silverSheenSweep 8s linear infinite;
+
+  /* Specular chrome drop shadow */
+  filter: drop-shadow(0 2px 2px rgba(255, 255, 255, 0.45)) 
+          drop-shadow(0 10px 30px rgba(0, 0, 0, 0.95))
+          drop-shadow(0 0 25px rgba(226, 232, 240, 0.3));
+  will-change: background-position;
 }
 
-.welcome-text-line.visible {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  filter: blur(0);
+@keyframes silverSheenSweep {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 220% 50%; }
 }
 
-.welcome-sub-line {
-  font-family: var(--font-sans);
-  font-size: 1.05rem;
-  font-weight: 600;
+.welcome-sub-line-tesseract {
+  font-family: var(--font-mono);
+  font-size: clamp(0.8rem, 1.2vw, 1.05rem);
+  font-weight: 500;
+  letter-spacing: 0.44em;
+  text-transform: uppercase;
+  line-height: 1;
+
+  /* Liquid Silver Satin finish */
+  background: linear-gradient(90deg, #94A3B8 0%, #FFFFFF 50%, #CBD5E1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 2px 15px rgba(0, 0, 0, 0.9));
+}
+
+/* Postminimal Action Pill Button - Brushed Silver Chrome */
+.welcome-launch-pill-tesseract {
+  pointer-events: auto; /* Clickable */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 28px;
+  background: rgba(18, 18, 20, 0.85);
+  border: 1px solid rgba(226, 232, 240, 0.35);
+  border-radius: 9999px;
+  backdrop-filter: blur(14px);
+  color: #F8FAFC;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(245, 243, 239, 0.85);
-  margin-top: 16px;
-  opacity: 0;
-  transform: translateY(-16px);
-  transition: all 1.8s cubic-bezier(0.16, 1, 0.3, 1);
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.95);
-  will-change: transform, opacity, letter-spacing;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(226, 232, 240, 0.22);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  margin-top: 14px;
 }
 
-.welcome-sub-line.visible {
-  opacity: 1;
-  letter-spacing: 0.52em;
-  transform: translateY(0);
+.welcome-launch-pill-tesseract:hover,
+.welcome-launch-pill-tesseract:focus-visible {
+  background: rgba(28, 30, 36, 0.95);
+  border-color: #FFFFFF;
+  color: #FFFFFF;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.launch-dot-tesseract {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #E2E8F0;
+  box-shadow: 0 0 8px #FFFFFF, 0 0 16px rgba(226, 232, 240, 0.7);
+  animation: tesseractPulse 2s infinite ease-in-out;
+}
+
+@keyframes tesseractPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.75); }
+}
+
+.welcome-hint-tesseract {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 18px;
 }
 
 /* ==========================================================================
