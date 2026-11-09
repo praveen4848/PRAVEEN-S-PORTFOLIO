@@ -65,6 +65,104 @@
   }
 
   // ==========================================================================
+  // Enter Portfolio Transition & Interaction Listeners
+  // ==========================================================================
+  function triggerLaunch() {
+    if (isExited) return;
+    isExited = true;
+
+    try {
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('resize', recalculateCharCenters);
+      window.removeEventListener('scroll', recalculateCharCenters);
+      window.removeEventListener('keydown', onKeyDown);
+    } catch (e) {}
+
+    playLaunchSound();
+
+    if (overlay) {
+      overlay.style.transition = 'opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1)';
+      overlay.style.opacity = '0';
+      overlay.style.transform = 'scale(1.04)';
+      overlay.style.pointerEvents = 'none';
+    }
+
+    // Immediately unhide main portfolio content and restore scroll
+    if (mainContent) mainContent.classList.add('visible');
+    document.body.style.overflow = 'auto';
+    window.portfolioEntered = true;
+
+    try { if (window.lucide) window.lucide.createIcons(); } catch (e) {}
+    try { if (window.rebindCursor) window.rebindCursor(); } catch (e) {}
+    try { if (window.initScrollAnimations) window.initScrollAnimations(); } catch (e) {}
+    try { if (window.initFlowingRoadmap) window.initFlowingRoadmap(); } catch (e) {}
+    try { if (window.startCelestialSphere) window.startCelestialSphere(); } catch (e) {}
+    try { if (window.startSpaceZoom) window.startSpaceZoom(); } catch (e) {}
+
+    // Immediate reveal of in-viewport cards on entrance
+    setTimeout(() => {
+      document.querySelectorAll('.section-heading-wrapper, .reveal-card, .flowing-step-card, .project-showcase-card').forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight + 250) {
+          el.classList.add('in-view');
+        }
+      });
+    }, 100);
+
+    setTimeout(() => {
+      if (overlay) overlay.classList.add('hidden');
+    }, 650);
+
+    const heroVid = document.getElementById('hero-intro-video');
+    if (heroVid) {
+      heroVid.muted = !!window.soundMuted;
+      heroVid.volume = 1.0;
+      heroVid.play().then(() => {
+        if (window.updatePlayBtnUI) window.updatePlayBtnUI(true);
+      }).catch(() => {
+        heroVid.muted = true;
+        heroVid.play().then(() => {
+          if (window.updatePlayBtnUI) window.updatePlayBtnUI(true);
+        }).catch(() => {});
+      });
+    }
+  }
+
+  function onKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
+      initAudio();
+      triggerLaunch();
+    }
+  }
+  window.addEventListener('keydown', onKeyDown);
+
+  if (launchTrigger) {
+    launchTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      initAudio();
+      triggerLaunch();
+    });
+  }
+
+  if (skipBtn) {
+    skipBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      initAudio();
+      triggerLaunch();
+    });
+  }
+
+  // Click anywhere on overlay to enter portfolio
+  overlay.addEventListener('click', (e) => {
+    initAudio();
+    triggerLaunch();
+  });
+
+  window.PraveenChristenDijouxEngine = {
+    triggerLaunch
+  };
+
+  // ==========================================================================
   // Variable-Weight Magnetic Kinetic Typography (Christen Dijoux Pa Algorithm)
   // ==========================================================================
   const charElements = Array.from(overlay.querySelectorAll('.cd-display-name .char'));
@@ -151,7 +249,6 @@
   // ==========================================================================
   // Main Animation Loop
   // ==========================================================================
-  let isExited = false;
   let startTime = performance.now();
 
   function animate(now) {
@@ -217,91 +314,4 @@
   }
 
   requestAnimationFrame(animate);
-
-  // ==========================================================================
-  // Enter Portfolio Transition
-  // ==========================================================================
-  function triggerLaunch() {
-    if (isExited) return;
-    isExited = true;
-
-    try {
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('resize', recalculateCharCenters);
-      window.removeEventListener('scroll', recalculateCharCenters);
-      window.removeEventListener('keydown', onKeyDown);
-    } catch (e) {}
-
-    playLaunchSound();
-
-    if (overlay) {
-      overlay.style.transition = 'opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1)';
-      overlay.style.opacity = '0';
-      overlay.style.transform = 'scale(1.04)';
-      overlay.style.pointerEvents = 'none';
-    }
-
-    // Immediately unhide main portfolio content and restore scroll
-    if (mainContent) mainContent.classList.add('visible');
-    document.body.style.overflow = 'auto';
-    window.portfolioEntered = true;
-
-    try { if (window.lucide) window.lucide.createIcons(); } catch (e) {}
-    try { if (window.rebindCursor) window.rebindCursor(); } catch (e) {}
-    try { if (window.initScrollAnimations) window.initScrollAnimations(); } catch (e) {}
-    try { if (window.initFlowingRoadmap) window.initFlowingRoadmap(); } catch (e) {}
-    try { if (window.startSpaceZoom) window.startSpaceZoom(); } catch (e) {}
-
-    setTimeout(() => {
-      if (overlay) overlay.classList.add('hidden');
-    }, 650);
-
-    const heroVid = document.getElementById('hero-intro-video');
-    if (heroVid) {
-      heroVid.muted = !!window.soundMuted;
-      heroVid.volume = 1.0;
-      heroVid.play().then(() => {
-        if (window.updatePlayBtnUI) window.updatePlayBtnUI(true);
-      }).catch(() => {
-        heroVid.muted = true;
-        heroVid.play().then(() => {
-          if (window.updatePlayBtnUI) window.updatePlayBtnUI(true);
-        }).catch(() => {});
-      });
-    }
-  }
-
-  function onKeyDown(e) {
-    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
-      initAudio();
-      triggerLaunch();
-    }
-  }
-  window.addEventListener('keydown', onKeyDown);
-
-  if (launchTrigger) {
-    launchTrigger.addEventListener('click', (e) => {
-      e.stopPropagation();
-      initAudio();
-      triggerLaunch();
-    });
-  }
-
-  if (skipBtn) {
-    skipBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      initAudio();
-      triggerLaunch();
-    });
-  }
-
-  // Click anywhere on overlay to enter portfolio
-  overlay.addEventListener('click', (e) => {
-    initAudio();
-    triggerLaunch();
-  });
-
-  window.PraveenChristenDijouxEngine = {
-    triggerLaunch
-  };
 })();

@@ -403,180 +403,251 @@
   }
 
   // ==========================================================================
-  // 3. ANIMATION 1: 3D SPACE ZOOM MOTION BACKGROUND (#bg-mesh-canvas)
-  // Deep space warp zoom with very small delicate starlight points & mouse parallax
+  // 3. ANIMATION 1: 3D CELESTIAL STRING SPHERE & PARTICLE ORBITS (#bg-mesh-canvas)
+  // Inspired by celestial gyroscope / spirograph particle orbits in empty space
+  // Pure monochrome white & silver strings, 3D depth, 60-120 FPS batched rendering
   // ==========================================================================
   const meshCanvas = document.getElementById('bg-mesh-canvas');
-  // ==========================================================================
-  // 3. ANIMATION 1: 3D SPACE ZOOM MOTION BACKGROUND (#bg-mesh-canvas)
-  // High-performance batched canvas rendering with zero save/restore overhead
-  // ==========================================================================
-  const meshCanvas = document.getElementById('bg-mesh-canvas');
-  let isSpaceZoomRunning = false;
-  let spaceZoomRAF = null;
+  let isCelestialRunning = false;
+  let celestialRAF = null;
 
   if (meshCanvas) {
     const sctx = meshCanvas.getContext('2d', { alpha: true });
     let sWidth = (meshCanvas.width = window.innerWidth);
     let sHeight = (meshCanvas.height = window.innerHeight);
 
-    let resizeCanvasTimer = null;
+    // Responsive Sphere Dimensions
+    let centerX = sWidth * 0.5;
+    let centerY = sHeight * 0.5;
+    let sphereRadius = Math.max(220, Math.min(sWidth, sHeight) * 0.38);
+
+    let resizeTimer = null;
     window.addEventListener('resize', () => {
-      clearTimeout(resizeCanvasTimer);
-      resizeCanvasTimer = setTimeout(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
         sWidth = meshCanvas.width = window.innerWidth;
         sHeight = meshCanvas.height = window.innerHeight;
+        centerX = sWidth * 0.5;
+        centerY = sHeight * 0.5;
+        sphereRadius = Math.max(220, Math.min(sWidth, sHeight) * 0.38);
+        buildOrbitalRings();
       }, 150);
     }, { passive: true });
 
-    // 3D Space Zoom Starfield - Adaptive density for 60/120 FPS
+    // 3D Orbital Rings Model
     const isMobile = window.innerWidth < 768;
-    const NUM_ZOOM_STARS = isMobile ? 85 : 180;
-    const MAX_DEPTH = 1400;
-    const zoomStars = [];
-    const zoomSpeed = 2.0;
+    const NUM_RINGS = isMobile ? 22 : 34;
+    const PTS_PER_RING = 48;
+    let orbitalRings = [];
 
-    let targetParallaxX = 0;
-    let targetParallaxY = 0;
-    let parallaxX = 0;
-    let parallaxY = 0;
+    function buildOrbitalRings() {
+      orbitalRings = [];
+      const A = sphereRadius;
+      const B = sphereRadius * 0.68;
+      const inclination = 0.98; // ~56 degrees tilt
+
+      for (let k = 0; k < NUM_RINGS; k++) {
+        const beta = (k / NUM_RINGS) * Math.PI * 2;
+        const ring = [];
+        for (let j = 0; j < PTS_PER_RING; j++) {
+          const phi = (j / PTS_PER_RING) * Math.PI * 2;
+          const x0 = A * Math.cos(phi);
+          const y0 = B * Math.sin(phi);
+          // Saddle twist core inflection for the iconic cosmic hourglass waist
+          const z0 = 0.22 * sphereRadius * Math.sin(phi * 2);
+
+          // Inclination around X
+          const cosI = Math.cos(inclination);
+          const sinI = Math.sin(inclination);
+          const x1 = x0;
+          const y1 = y0 * cosI - z0 * sinI;
+          const z1 = y0 * sinI + z0 * cosI;
+
+          // Precession beta around Y
+          const cosB = Math.cos(beta);
+          const sinB = Math.sin(beta);
+          const x2 = x1 * cosB + z1 * sinB;
+          const y2 = y1;
+          const z2 = -x1 * sinB + z1 * cosB;
+
+          ring.push({ x: x2, y: y2, z: z2 });
+        }
+        orbitalRings.push(ring);
+      }
+    }
+    buildOrbitalRings();
+
+    // Surrounding Ambient Celestial Dust Stars
+    const NUM_DUST = isMobile ? 25 : 50;
+    const dustParticles = [];
+    for (let i = 0; i < NUM_DUST; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = (Math.random() - 0.5) * Math.PI;
+      const dist = sphereRadius * (1.05 + Math.random() * 0.95);
+      dustParticles.push({
+        x: dist * Math.cos(phi) * Math.cos(theta),
+        y: dist * Math.sin(phi),
+        z: dist * Math.cos(phi) * Math.sin(theta),
+        radius: Math.random() * 0.7 + 0.35,
+        twinklePhase: Math.random() * Math.PI * 2,
+        twinkleSpeed: Math.random() * 0.02 + 0.015
+      });
+    }
+
+    // Dynamic 3D Euler Angles & Parallax
+    let rotX = 0.35;
+    let rotY = 0.0;
+    let targetTiltX = 0;
+    let targetTiltY = 0;
+    let curTiltX = 0;
+    let curTiltY = 0;
 
     window.addEventListener('mousemove', (e) => {
-      targetParallaxX = (e.clientX - sWidth / 2) * 0.08;
-      targetParallaxY = (e.clientY - sHeight / 2) * 0.08;
+      targetTiltX = ((e.clientY / sHeight) - 0.5) * 0.32;
+      targetTiltY = ((e.clientX / sWidth) - 0.5) * 0.32;
     }, { passive: true });
 
-    class SpaceZoomStar {
-      constructor(randomZ = true) {
-        this.reset(randomZ);
-      }
-
-      reset(randomZ = false) {
-        this.x = (Math.random() - 0.5) * (sWidth * 2.6);
-        this.y = (Math.random() - 0.5) * (sHeight * 2.6);
-        this.z = randomZ ? Math.random() * MAX_DEPTH + 10 : MAX_DEPTH;
-        this.baseRadius = Math.random() * 0.6 + 0.45;
-        this.twinklePhase = Math.random() * Math.PI * 2;
-        this.twinkleSpeed = Math.random() * 0.02 + 0.015;
-        this.screenX = 0;
-        this.screenY = 0;
-        this.prevX = 0;
-        this.prevY = 0;
-        this.size = 0.6;
-        this.alpha = 0.5;
-        this.visible = false;
-      }
-
-      update() {
-        this.z -= zoomSpeed;
-        this.twinklePhase += this.twinkleSpeed;
-
-        if (this.z <= 12) {
-          this.reset(false);
-          return;
-        }
-
-        const focalLength = 380;
-        const scale = focalLength / this.z;
-
-        this.screenX = sWidth / 2 + this.x * scale + parallaxX;
-        this.screenY = sHeight / 2 + this.y * scale + parallaxY;
-
-        if (this.screenX < -20 || this.screenX > sWidth + 20 || this.screenY < -20 || this.screenY > sHeight + 20) {
-          this.visible = false;
-          return;
-        }
-
-        this.visible = true;
-        const depthRatio = 1 - this.z / MAX_DEPTH;
-        this.size = Math.max(0.35, Math.min(1.25, this.baseRadius * (scale * 0.85 + 0.5)));
-        const twinkle = 0.8 + 0.2 * Math.sin(this.twinklePhase);
-        this.alpha = Math.max(0.12, Math.min(0.85, (depthRatio * 0.68 + 0.15) * twinkle));
-
-        if (this.z < 380) {
-          const prevZ = this.z + zoomSpeed * 2.0;
-          const prevScale = focalLength / prevZ;
-          this.prevX = sWidth / 2 + this.x * prevScale + parallaxX;
-          this.prevY = sHeight / 2 + this.y * prevScale + parallaxY;
-        }
-      }
-    }
-
-    for (let i = 0; i < NUM_ZOOM_STARS; i++) {
-      zoomStars.push(new SpaceZoomStar(true));
-    }
-
-    function renderSpaceZoomBackground() {
-      if (!isSpaceZoomRunning || document.hidden) {
-        spaceZoomRAF = null;
+    function renderCelestialSphere() {
+      if (!isCelestialRunning || document.hidden) {
+        celestialRAF = null;
         return;
       }
-      spaceZoomRAF = requestAnimationFrame(renderSpaceZoomBackground);
+      celestialRAF = requestAnimationFrame(renderCelestialSphere);
 
       sctx.clearRect(0, 0, sWidth, sHeight);
 
-      // Parallax smooth easing
-      parallaxX += (targetParallaxX - parallaxX) * 0.04;
-      parallaxY += (targetParallaxY - parallaxY) * 0.04;
+      // Smooth continuous precession & mouse tilt
+      rotY += 0.0028;
+      rotX += 0.0014;
+      curTiltX += (targetTiltX - curTiltX) * 0.04;
+      curTiltY += (targetTiltY - curTiltY) * 0.04;
 
-      // Update all stars
-      for (let i = 0; i < zoomStars.length; i++) {
-        zoomStars[i].update();
-      }
+      const totalRotX = rotX + curTiltX;
+      const totalRotY = rotY + curTiltY;
 
-      // 1. Batched Light Streaks (Zero save/restore calls)
-      sctx.strokeStyle = '#FFFFFF';
-      sctx.lineWidth = 0.6;
-      for (let i = 0; i < zoomStars.length; i++) {
-        const star = zoomStars[i];
-        if (star.visible && star.z < 380) {
-          sctx.globalAlpha = star.alpha * 0.42;
-          sctx.beginPath();
-          sctx.moveTo(star.prevX, star.prevY);
-          sctx.lineTo(star.screenX, star.screenY);
-          sctx.stroke();
+      const cosY = Math.cos(totalRotY);
+      const sinY = Math.sin(totalRotY);
+      const cosX = Math.cos(totalRotX);
+      const sinX = Math.sin(totalRotX);
+      const focalLength = 1100;
+
+      // 1. Soft Central Caustic Glow Halo (Subtle stellar core)
+      const grad = sctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, sphereRadius * 0.55);
+      grad.addColorStop(0, 'rgba(255, 255, 255, 0.10)');
+      grad.addColorStop(0.35, 'rgba(255, 255, 255, 0.035)');
+      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      sctx.fillStyle = grad;
+      sctx.beginPath();
+      sctx.arc(centerX, centerY, sphereRadius * 0.55, 0, Math.PI * 2);
+      sctx.fill();
+
+      // 2. Render 3D Dotted Orbital String Rings
+      sctx.setLineDash([1.4, 4.2]);
+      sctx.lineWidth = 0.85;
+
+      for (let k = 0; k < orbitalRings.length; k++) {
+        const ring = orbitalRings[k];
+        let avgZ = 0;
+
+        // Project ring points
+        const projected = [];
+        for (let j = 0; j < ring.length; j++) {
+          const pt = ring[j];
+          // Rotate Y
+          const x1 = pt.x * cosY + pt.z * sinY;
+          const y1 = pt.y;
+          const z1 = -pt.x * sinY + pt.z * cosY;
+
+          // Rotate X
+          const x2 = x1;
+          const y2 = y1 * cosX - z1 * sinX;
+          const z2 = y1 * sinX + z1 * cosX;
+
+          avgZ += z2;
+          const scale = focalLength / (focalLength + z2);
+          projected.push({
+            px: centerX + x2 * scale,
+            py: centerY + y2 * scale
+          });
         }
+        avgZ /= ring.length;
+
+        // Depth lighting: front strings brighter, back strings softer
+        const depthNorm = Math.max(0, Math.min(1, (avgZ + sphereRadius) / (sphereRadius * 2)));
+        const depthRatio = 1.0 - depthNorm;
+        const alpha = Math.max(0.12, Math.min(0.78, 0.12 + depthRatio * 0.66));
+
+        sctx.strokeStyle = `rgba(255, 255, 255, ${alpha.toFixed(3)})`;
+        sctx.beginPath();
+        sctx.moveTo(projected[0].px, projected[0].py);
+        for (let p = 1; p < projected.length; p++) {
+          sctx.lineTo(projected[p].px, projected[p].py);
+        }
+        sctx.closePath();
+        sctx.stroke();
       }
 
-      // 2. Batched Pinpoint Light Stars
+      // Reset line dash for starlight points
+      sctx.setLineDash([]);
+
+      // 3. Batched Ambient Celestial Dust Particles
       sctx.fillStyle = '#FFFFFF';
-      for (let i = 0; i < zoomStars.length; i++) {
-        const star = zoomStars[i];
-        if (star.visible) {
-          sctx.globalAlpha = star.alpha;
-          sctx.beginPath();
-          sctx.arc(star.screenX, star.screenY, star.size, 0, Math.PI * 2);
-          sctx.fill();
-        }
+      for (let i = 0; i < dustParticles.length; i++) {
+        const d = dustParticles[i];
+        d.twinklePhase += d.twinkleSpeed;
+
+        // Rotate in 3D
+        const x1 = d.x * cosY + d.z * sinY;
+        const y1 = d.y;
+        const z1 = -d.x * sinY + d.z * cosY;
+
+        const x2 = x1;
+        const y2 = y1 * cosX - z1 * sinX;
+        const z2 = y1 * sinX + z1 * cosX;
+
+        const scale = focalLength / (focalLength + z2);
+        const px = centerX + x2 * scale;
+        const py = centerY + y2 * scale;
+
+        const depthNorm = Math.max(0, Math.min(1, (z2 + sphereRadius * 1.5) / (sphereRadius * 3)));
+        const depthRatio = 1.0 - depthNorm;
+        const twinkle = 0.75 + 0.25 * Math.sin(d.twinklePhase);
+        const alpha = Math.max(0.1, Math.min(0.85, (0.15 + depthRatio * 0.6) * twinkle));
+
+        sctx.globalAlpha = alpha;
+        sctx.beginPath();
+        sctx.arc(px, py, d.radius * scale, 0, Math.PI * 2);
+        sctx.fill();
       }
       sctx.globalAlpha = 1.0;
     }
 
-    function startSpaceZoom() {
-      if (isSpaceZoomRunning) return;
-      isSpaceZoomRunning = true;
-      if (!spaceZoomRAF) {
-        renderSpaceZoomBackground();
+    function startCelestialSphere() {
+      if (isCelestialRunning) return;
+      isCelestialRunning = true;
+      if (!celestialRAF) {
+        renderCelestialSphere();
       }
     }
-    window.startSpaceZoom = startSpaceZoom;
+    window.startCelestialSphere = startCelestialSphere;
+    window.startSpaceZoom = startCelestialSphere; // Backward compatibility alias
 
-    // Pause when tab is backgrounded to preserve device battery and CPU
+    // Visibility Listener: pause when tab hidden to preserve CPU/battery
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
-        if (spaceZoomRAF) {
-          cancelAnimationFrame(spaceZoomRAF);
-          spaceZoomRAF = null;
+        if (celestialRAF) {
+          cancelAnimationFrame(celestialRAF);
+          celestialRAF = null;
         }
-      } else if (isSpaceZoomRunning && !spaceZoomRAF) {
-        renderSpaceZoomBackground();
+      } else if (isCelestialRunning && !celestialRAF) {
+        renderCelestialSphere();
       }
     });
 
-    // If welcome overlay is not present or already entered, start right away
+    // Auto-start if portfolio already entered or overlay hidden
     const welcomeOverlayEl = document.getElementById('welcome-overlay');
     if (!welcomeOverlayEl || welcomeOverlayEl.classList.contains('hidden') || window.portfolioEntered) {
-      startSpaceZoom();
+      startCelestialSphere();
     }
   }
 
