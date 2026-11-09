@@ -12,10 +12,16 @@
 (function () {
   'use strict';
 
+  let isExited = false;
   const overlay = document.getElementById('welcome-overlay');
-  if (!overlay) return;
-
   const mainContent = document.getElementById('main-content');
+
+  if (!overlay) {
+    if (mainContent) mainContent.classList.add('visible');
+    document.body.style.overflow = 'auto';
+    return;
+  }
+
   const launchTrigger = document.getElementById('welcome-trigger');
   const skipBtn = document.getElementById('skip-intro-btn');
   const ridgeImage = document.getElementById('cd-ridge-image');
@@ -219,50 +225,59 @@
     if (isExited) return;
     isExited = true;
 
-    // Remove window event listeners to eliminate CPU overhead after entrance
-    window.removeEventListener('pointermove', onPointerMove);
-    window.removeEventListener('resize', recalculateCharCenters);
-    window.removeEventListener('scroll', recalculateCharCenters);
+    try {
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('resize', recalculateCharCenters);
+      window.removeEventListener('scroll', recalculateCharCenters);
+      window.removeEventListener('keydown', onKeyDown);
+    } catch (e) {}
 
     playLaunchSound();
 
     if (overlay) {
-      overlay.style.transition = 'opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1)';
+      overlay.style.transition = 'opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1)';
       overlay.style.opacity = '0';
       overlay.style.transform = 'scale(1.04)';
       overlay.style.pointerEvents = 'none';
     }
 
+    // Immediately unhide main portfolio content and restore scroll
+    if (mainContent) mainContent.classList.add('visible');
+    document.body.style.overflow = 'auto';
+    window.portfolioEntered = true;
+
+    try { if (window.lucide) window.lucide.createIcons(); } catch (e) {}
+    try { if (window.rebindCursor) window.rebindCursor(); } catch (e) {}
+    try { if (window.initScrollAnimations) window.initScrollAnimations(); } catch (e) {}
+    try { if (window.initFlowingRoadmap) window.initFlowingRoadmap(); } catch (e) {}
+    try { if (window.startSpaceZoom) window.startSpaceZoom(); } catch (e) {}
+
     setTimeout(() => {
       if (overlay) overlay.classList.add('hidden');
-      if (mainContent) mainContent.classList.add('visible');
-      document.body.style.overflow = 'auto';
+    }, 650);
 
-      if (window.lucide) window.lucide.createIcons();
-      if (window.rebindCursor) window.rebindCursor();
-      if (window.initScrollAnimations) window.initScrollAnimations();
-      if (window.initFlowingRoadmap) window.initFlowingRoadmap();
-
-      window.portfolioEntered = true;
-      if (window.startSpaceZoom) {
-        window.startSpaceZoom();
-      }
-
-      const heroVid = document.getElementById('hero-intro-video');
-      if (heroVid) {
-        heroVid.muted = !!window.soundMuted;
-        heroVid.volume = 1.0;
+    const heroVid = document.getElementById('hero-intro-video');
+    if (heroVid) {
+      heroVid.muted = !!window.soundMuted;
+      heroVid.volume = 1.0;
+      heroVid.play().then(() => {
+        if (window.updatePlayBtnUI) window.updatePlayBtnUI(true);
+      }).catch(() => {
+        heroVid.muted = true;
         heroVid.play().then(() => {
           if (window.updatePlayBtnUI) window.updatePlayBtnUI(true);
-        }).catch(() => {
-          heroVid.muted = true;
-          heroVid.play().then(() => {
-            if (window.updatePlayBtnUI) window.updatePlayBtnUI(true);
-          }).catch(() => {});
-        });
-      }
-    }, 700);
+        }).catch(() => {});
+      });
+    }
   }
+
+  function onKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
+      initAudio();
+      triggerLaunch();
+    }
+  }
+  window.addEventListener('keydown', onKeyDown);
 
   if (launchTrigger) {
     launchTrigger.addEventListener('click', (e) => {
@@ -280,9 +295,8 @@
     });
   }
 
-  // Click anywhere on overlay (outside the text selection) to launch
+  // Click anywhere on overlay to enter portfolio
   overlay.addEventListener('click', (e) => {
-    if (e.target.closest('#welcome-trigger') || e.target.closest('#skip-intro-btn')) return;
     initAudio();
     triggerLaunch();
   });

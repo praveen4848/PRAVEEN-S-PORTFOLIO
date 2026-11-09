@@ -51,7 +51,14 @@ html {
 }
 
 @media (pointer: fine) {
-  body, a, button, input, textarea, select, .metallic-card, .filter-btn {
+  body.custom-cursor-active,
+  body.custom-cursor-active a,
+  body.custom-cursor-active button,
+  body.custom-cursor-active input,
+  body.custom-cursor-active textarea,
+  body.custom-cursor-active select,
+  body.custom-cursor-active .metallic-card,
+  body.custom-cursor-active .filter-btn {
     cursor: none !important;
   }
 }
@@ -130,20 +137,19 @@ body {
   height: 24px;
   pointer-events: none;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
-  transition: opacity 0.2s ease;
+  transform: translate(-10%, -10%);
+  transition: opacity 0.2s ease, transform 0.12s ease-out;
   z-index: 100000;
   opacity: 0;
-  transform: translate3d(-100px, -100px, 0);
-  will-change: transform;
+  will-change: left, top;
 }
 
 .cursor-pointer-tarot.active {
   opacity: 1;
 }
 
-.cursor-pointer-tarot.hovering svg {
-  transform: scale(1.22);
-  transition: transform 0.15s ease-out;
+.cursor-pointer-tarot.hovering {
+  transform: translate(-10%, -10%) scale(1.25);
 }
 
 .cursor-follower-ring {
@@ -872,8 +878,8 @@ body {
 #main-content {
   position: relative;
   z-index: 10;
-  opacity: 0;
-  transition: opacity 1s var(--ease-out-expo);
+  opacity: 1;
+  transition: opacity 0.8s var(--ease-out-expo);
 }
 
 #main-content.visible {

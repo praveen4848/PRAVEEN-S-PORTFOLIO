@@ -175,26 +175,21 @@
   window.setGlobalSoundMuted = setGlobalSoundMuted;
 
   // ==========================================================================
-  // 1. SINGLE CELLULAR METALLIC CURSOR (NO CIRCLE) - 120Hz GPU ACCELERATED
+  // 1. SINGLE CELLULAR METALLIC CURSOR (NO CIRCLE)
   // ==========================================================================
   const cursorPointer = document.getElementById('cursor-pointer');
-  let cursorTicking = false;
 
   window.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
 
-    if (!cursorTicking) {
-      requestAnimationFrame(() => {
-        if (cursorPointer) {
-          cursorPointer.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
-          if (!cursorPointer.classList.contains('active')) {
-            cursorPointer.classList.add('active');
-          }
-        }
-        cursorTicking = false;
-      });
-      cursorTicking = true;
+    if (cursorPointer) {
+      cursorPointer.style.left = `${mouseX}px`;
+      cursorPointer.style.top = `${mouseY}px`;
+      if (!cursorPointer.classList.contains('active')) {
+        cursorPointer.classList.add('active');
+        document.body.classList.add('custom-cursor-active');
+      }
     }
   }, { passive: true });
 
@@ -611,8 +606,10 @@
           card.style.setProperty('--mouse-x', `${x}px`);
           card.style.setProperty('--mouse-y', `${y}px`);
 
-          const tiltX = ((x / rect.width - 0.5) * 2).toFixed(2);
-          const tiltY = ((y / rect.height - 0.5) * 2).toFixed(2);
+          const w = (rect && rect.width > 0) ? rect.width : 300;
+          const h = (rect && rect.height > 0) ? rect.height : 200;
+          const tiltX = Math.max(-1, Math.min(1, (x / w - 0.5) * 2)).toFixed(2);
+          const tiltY = Math.max(-1, Math.min(1, (y / h - 0.5) * 2)).toFixed(2);
 
           card.style.setProperty('--tilt-x', tiltX);
           card.style.setProperty('--tilt-y', tiltY);
@@ -1018,15 +1015,32 @@
   }
 
   // Initialize
-  document.addEventListener('DOMContentLoaded', () => {
+  function initializeApp() {
     bindCursorInteractions();
     initCard3DTiltAndSpotlight();
     initScrollAnimations();
     initFlowingRoadmap();
     if (window.lucide) {
-      window.lucide.createIcons();
+      try {
+        window.lucide.createIcons();
+      } catch (e) {}
     }
-  });
+    // Safety check: ensure cards currently visible or in DOM have in-view class
+    setTimeout(() => {
+      document.querySelectorAll('.section-heading-wrapper, .reveal-card, .flowing-step-card, .project-showcase-card').forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight + 150) {
+          el.classList.add('in-view');
+        }
+      });
+    }, 150);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+  } else {
+    initializeApp();
+  }
 
   window.rebindCursor = bindCursorInteractions;
   window.initScrollAnimations = initScrollAnimations;
