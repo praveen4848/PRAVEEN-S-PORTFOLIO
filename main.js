@@ -175,22 +175,28 @@
   window.setGlobalSoundMuted = setGlobalSoundMuted;
 
   // ==========================================================================
-  // 1. SINGLE CELLULAR METALLIC CURSOR (NO CIRCLE)
+  // 1. SINGLE CELLULAR METALLIC CURSOR (NO CIRCLE) - 120Hz GPU ACCELERATED
   // ==========================================================================
   const cursorPointer = document.getElementById('cursor-pointer');
+  let cursorTicking = false;
 
   window.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
 
-    if (cursorPointer) {
-      cursorPointer.style.left = `${mouseX}px`;
-      cursorPointer.style.top = `${mouseY}px`;
-      if (!cursorPointer.classList.contains('active')) {
-        cursorPointer.classList.add('active');
-      }
+    if (!cursorTicking) {
+      requestAnimationFrame(() => {
+        if (cursorPointer) {
+          cursorPointer.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+          if (!cursorPointer.classList.contains('active')) {
+            cursorPointer.classList.add('active');
+          }
+        }
+        cursorTicking = false;
+      });
+      cursorTicking = true;
     }
-  });
+  }, { passive: true });
 
   window.addEventListener('mousedown', () => {
     playClickSound(720, 0.04);
@@ -205,56 +211,80 @@
       el.addEventListener('mouseenter', () => {
         if (cursorPointer) cursorPointer.classList.add('hovering');
         playClickSound(850, 0.02);
-      });
+      }, { passive: true });
       el.addEventListener('mouseleave', () => {
         if (cursorPointer) cursorPointer.classList.remove('hovering');
-      });
+      }, { passive: true });
     });
   }
 
   // ==========================================================================
-  // 2. DYNAMIC SCROLL PROGRESS BAR & ANIMATED NAVBAR DOCK
+  // 2. DYNAMIC SCROLL PROGRESS BAR & ANIMATED NAVBAR DOCK (ZERO REFLOW)
   // ==========================================================================
   const progressBar = document.getElementById('scroll-progress-bar');
   const siteHeader = document.getElementById('site-header');
   const navLinks = document.querySelectorAll('.nav-link[data-section]');
   const sections = document.querySelectorAll('section[id]');
 
-  window.addEventListener('scroll', () => {
+  let cachedDocHeight = 1;
+  let sectionOffsets = [];
+
+  function cacheLayoutPositions() {
+    cachedDocHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    sectionOffsets = Array.from(sections).map((sec) => ({
+      id: sec.getAttribute('id'),
+      top: sec.offsetTop,
+      bottom: sec.offsetTop + sec.offsetHeight
+    }));
+  }
+
+  window.addEventListener('load', cacheLayoutPositions, { passive: true });
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(cacheLayoutPositions, 200);
+  }, { passive: true });
+  setTimeout(cacheLayoutPositions, 400);
+
+  let scrollTicking = false;
+  function onScrollUpdate() {
     const scrollY = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = docHeight > 0 ? (scrollY / docHeight) * 100 : 0;
+    const progress = Math.min(100, Math.max(0, (scrollY / cachedDocHeight) * 100));
 
     if (progressBar) {
       progressBar.style.width = `${progress}%`;
     }
 
     if (siteHeader) {
-      if (scrollY > 40) {
-        siteHeader.classList.add('scrolled');
-      } else {
-        siteHeader.classList.remove('scrolled');
+      siteHeader.classList.toggle('scrolled', scrollY > 40);
+    }
+
+    // Nav Scroll Spy using cached offsets (zero DOM reading during scroll!)
+    let current = '';
+    const scrollPos = scrollY + 160;
+    for (let i = 0; i < sectionOffsets.length; i++) {
+      const sec = sectionOffsets[i];
+      if (scrollPos >= sec.top && scrollPos < sec.bottom) {
+        current = sec.id;
+        break;
       }
     }
 
-    // Nav Scroll Spy: Dynamically highlight active link
-    let current = '';
-    const scrollPos = scrollY + 160;
-    sections.forEach((sec) => {
-      const top = sec.offsetTop;
-      const height = sec.offsetHeight;
-      if (scrollPos >= top && scrollPos < top + height) {
-        current = sec.getAttribute('id');
-      }
-    });
+    if (current) {
+      navLinks.forEach((link) => {
+        link.classList.toggle('active', link.getAttribute('data-section') === current);
+      });
+    }
 
-    navLinks.forEach((link) => {
-      link.classList.remove('active');
-      if (link.getAttribute('data-section') === current) {
-        link.classList.add('active');
-      }
-    });
-  });
+    scrollTicking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      requestAnimationFrame(onScrollUpdate);
+      scrollTicking = true;
+    }
+  }, { passive: true });
 
   // Master Sound Controller Toggle Button in Navbar (Controls Tap Sound FX + Video Audio)
   const soundToggleBtn = document.getElementById('sound-toggle-btn');
@@ -382,18 +412,31 @@
   // Deep space warp zoom with very small delicate starlight points & mouse parallax
   // ==========================================================================
   const meshCanvas = document.getElementById('bg-mesh-canvas');
+  // ==========================================================================
+  // 3. ANIMATION 1: 3D SPACE ZOOM MOTION BACKGROUND (#bg-mesh-canvas)
+  // High-performance batched canvas rendering with zero save/restore overhead
+  // ==========================================================================
+  const meshCanvas = document.getElementById('bg-mesh-canvas');
+  let isSpaceZoomRunning = false;
+  let spaceZoomRAF = null;
+
   if (meshCanvas) {
-    const sctx = meshCanvas.getContext('2d');
+    const sctx = meshCanvas.getContext('2d', { alpha: true });
     let sWidth = (meshCanvas.width = window.innerWidth);
     let sHeight = (meshCanvas.height = window.innerHeight);
 
+    let resizeCanvasTimer = null;
     window.addEventListener('resize', () => {
-      sWidth = meshCanvas.width = window.innerWidth;
-      sHeight = meshCanvas.height = window.innerHeight;
-    });
+      clearTimeout(resizeCanvasTimer);
+      resizeCanvasTimer = setTimeout(() => {
+        sWidth = meshCanvas.width = window.innerWidth;
+        sHeight = meshCanvas.height = window.innerHeight;
+      }, 150);
+    }, { passive: true });
 
-    // 3D Space Zoom Starfield
-    const NUM_ZOOM_STARS = 450;
+    // 3D Space Zoom Starfield - Adaptive density for 60/120 FPS
+    const isMobile = window.innerWidth < 768;
+    const NUM_ZOOM_STARS = isMobile ? 85 : 180;
     const MAX_DEPTH = 1400;
     const zoomStars = [];
     const zoomSpeed = 2.0;
@@ -404,9 +447,9 @@
     let parallaxY = 0;
 
     window.addEventListener('mousemove', (e) => {
-      targetParallaxX = (e.clientX - sWidth / 2) * 0.12;
-      targetParallaxY = (e.clientY - sHeight / 2) * 0.12;
-    });
+      targetParallaxX = (e.clientX - sWidth / 2) * 0.08;
+      targetParallaxY = (e.clientY - sHeight / 2) * 0.08;
+    }, { passive: true });
 
     class SpaceZoomStar {
       constructor(randomZ = true) {
@@ -414,67 +457,53 @@
       }
 
       reset(randomZ = false) {
-        // Broad distribution across deep space frustum
-        this.x = (Math.random() - 0.5) * (sWidth * 2.8);
-        this.y = (Math.random() - 0.5) * (sHeight * 2.8);
+        this.x = (Math.random() - 0.5) * (sWidth * 2.6);
+        this.y = (Math.random() - 0.5) * (sHeight * 2.6);
         this.z = randomZ ? Math.random() * MAX_DEPTH + 10 : MAX_DEPTH;
-        this.baseRadius = Math.random() * 0.65 + 0.45; // Very small light: 0.45px to 1.1px
+        this.baseRadius = Math.random() * 0.6 + 0.45;
         this.twinklePhase = Math.random() * Math.PI * 2;
-        this.twinkleSpeed = Math.random() * 0.025 + 0.015;
+        this.twinkleSpeed = Math.random() * 0.02 + 0.015;
+        this.screenX = 0;
+        this.screenY = 0;
+        this.prevX = 0;
+        this.prevY = 0;
+        this.size = 0.6;
+        this.alpha = 0.5;
+        this.visible = false;
       }
 
       update() {
         this.z -= zoomSpeed;
         this.twinklePhase += this.twinkleSpeed;
 
-        // When passing camera plane, recycle to deep space
         if (this.z <= 12) {
           this.reset(false);
-        }
-      }
-
-      draw() {
-        const focalLength = 400;
-        const scale = focalLength / Math.max(1, this.z);
-
-        const screenX = sWidth / 2 + this.x * scale + parallaxX;
-        const screenY = sHeight / 2 + this.y * scale + parallaxY;
-
-        // Skip if out of screen bounds
-        if (screenX < -20 || screenX > sWidth + 20 || screenY < -20 || screenY > sHeight + 20) {
           return;
         }
 
-        // Distance attenuation
-        const depthRatio = 1 - this.z / MAX_DEPTH; // 0 (far) to 1 (near)
-        const size = Math.max(0.35, Math.min(1.35, this.baseRadius * (scale * 0.95 + 0.5)));
-        const twinkle = 0.8 + 0.2 * Math.sin(this.twinklePhase);
-        const alpha = Math.max(0.12, Math.min(0.85, (depthRatio * 0.68 + 0.15) * twinkle));
+        const focalLength = 380;
+        const scale = focalLength / this.z;
 
-        // For nearby zooming stars, draw delicate micro light-streak pointing toward center
-        if (this.z < 380) {
-          const prevZ = this.z + zoomSpeed * 2.2;
-          const prevScale = focalLength / prevZ;
-          const prevX = sWidth / 2 + this.x * prevScale + parallaxX;
-          const prevY = sHeight / 2 + this.y * prevScale + parallaxY;
+        this.screenX = sWidth / 2 + this.x * scale + parallaxX;
+        this.screenY = sHeight / 2 + this.y * scale + parallaxY;
 
-          sctx.save();
-          sctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.5})`;
-          sctx.lineWidth = Math.max(0.4, size * 0.7);
-          sctx.beginPath();
-          sctx.moveTo(prevX, prevY);
-          sctx.lineTo(screenX, screenY);
-          sctx.stroke();
-          sctx.restore();
+        if (this.screenX < -20 || this.screenX > sWidth + 20 || this.screenY < -20 || this.screenY > sHeight + 20) {
+          this.visible = false;
+          return;
         }
 
-        // Very small pinpoint light star
-        sctx.save();
-        sctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-        sctx.beginPath();
-        sctx.arc(screenX, screenY, size, 0, Math.PI * 2);
-        sctx.fill();
-        sctx.restore();
+        this.visible = true;
+        const depthRatio = 1 - this.z / MAX_DEPTH;
+        this.size = Math.max(0.35, Math.min(1.25, this.baseRadius * (scale * 0.85 + 0.5)));
+        const twinkle = 0.8 + 0.2 * Math.sin(this.twinklePhase);
+        this.alpha = Math.max(0.12, Math.min(0.85, (depthRatio * 0.68 + 0.15) * twinkle));
+
+        if (this.z < 380) {
+          const prevZ = this.z + zoomSpeed * 2.0;
+          const prevScale = focalLength / prevZ;
+          this.prevX = sWidth / 2 + this.x * prevScale + parallaxX;
+          this.prevY = sHeight / 2 + this.y * prevScale + parallaxY;
+        }
       }
     }
 
@@ -483,23 +512,81 @@
     }
 
     function renderSpaceZoomBackground() {
-      requestAnimationFrame(renderSpaceZoomBackground);
+      if (!isSpaceZoomRunning || document.hidden) {
+        spaceZoomRAF = null;
+        return;
+      }
+      spaceZoomRAF = requestAnimationFrame(renderSpaceZoomBackground);
+
       sctx.clearRect(0, 0, sWidth, sHeight);
 
-      // Smooth parallax easing
+      // Parallax smooth easing
       parallaxX += (targetParallaxX - parallaxX) * 0.04;
       parallaxY += (targetParallaxY - parallaxY) * 0.04;
 
+      // Update all stars
       for (let i = 0; i < zoomStars.length; i++) {
         zoomStars[i].update();
-        zoomStars[i].draw();
+      }
+
+      // 1. Batched Light Streaks (Zero save/restore calls)
+      sctx.strokeStyle = '#FFFFFF';
+      sctx.lineWidth = 0.6;
+      for (let i = 0; i < zoomStars.length; i++) {
+        const star = zoomStars[i];
+        if (star.visible && star.z < 380) {
+          sctx.globalAlpha = star.alpha * 0.42;
+          sctx.beginPath();
+          sctx.moveTo(star.prevX, star.prevY);
+          sctx.lineTo(star.screenX, star.screenY);
+          sctx.stroke();
+        }
+      }
+
+      // 2. Batched Pinpoint Light Stars
+      sctx.fillStyle = '#FFFFFF';
+      for (let i = 0; i < zoomStars.length; i++) {
+        const star = zoomStars[i];
+        if (star.visible) {
+          sctx.globalAlpha = star.alpha;
+          sctx.beginPath();
+          sctx.arc(star.screenX, star.screenY, star.size, 0, Math.PI * 2);
+          sctx.fill();
+        }
+      }
+      sctx.globalAlpha = 1.0;
+    }
+
+    function startSpaceZoom() {
+      if (isSpaceZoomRunning) return;
+      isSpaceZoomRunning = true;
+      if (!spaceZoomRAF) {
+        renderSpaceZoomBackground();
       }
     }
-    renderSpaceZoomBackground();
+    window.startSpaceZoom = startSpaceZoom;
+
+    // Pause when tab is backgrounded to preserve device battery and CPU
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        if (spaceZoomRAF) {
+          cancelAnimationFrame(spaceZoomRAF);
+          spaceZoomRAF = null;
+        }
+      } else if (isSpaceZoomRunning && !spaceZoomRAF) {
+        renderSpaceZoomBackground();
+      }
+    });
+
+    // If welcome overlay is not present or already entered, start right away
+    const welcomeOverlayEl = document.getElementById('welcome-overlay');
+    if (!welcomeOverlayEl || welcomeOverlayEl.classList.contains('hidden') || window.portfolioEntered) {
+      startSpaceZoom();
+    }
   }
 
   // ==========================================================================
-  // 4. ANIMATION 3: 3D HOLOGRAPHIC CARD TILT & SPECULAR SPOTLIGHT
+  // 4. ANIMATION 3: 3D HOLOGRAPHIC CARD TILT & SPECULAR SPOTLIGHT (BATCHED RAF)
   // ==========================================================================
   function initCard3DTiltAndSpotlight() {
     const cards = document.querySelectorAll(
@@ -507,29 +594,39 @@
     );
 
     cards.forEach((card) => {
+      let rect = null;
+      let tiltRAF = null;
+
+      card.addEventListener('mouseenter', () => {
+        rect = card.getBoundingClientRect();
+      }, { passive: true });
+
       card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
+        if (!rect) rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        // Set spotlight coordinates
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
+        if (tiltRAF) cancelAnimationFrame(tiltRAF);
+        tiltRAF = requestAnimationFrame(() => {
+          card.style.setProperty('--mouse-x', `${x}px`);
+          card.style.setProperty('--mouse-y', `${y}px`);
 
-        // Compute normalized tilt (-1 to 1)
-        const tiltX = (x / rect.width - 0.5) * 2;
-        const tiltY = (y / rect.height - 0.5) * 2;
+          const tiltX = ((x / rect.width - 0.5) * 2).toFixed(2);
+          const tiltY = ((y / rect.height - 0.5) * 2).toFixed(2);
 
-        card.style.setProperty('--tilt-x', tiltX.toFixed(3));
-        card.style.setProperty('--tilt-y', tiltY.toFixed(3));
-      });
+          card.style.setProperty('--tilt-x', tiltX);
+          card.style.setProperty('--tilt-y', tiltY);
+        });
+      }, { passive: true });
 
       card.addEventListener('mouseleave', () => {
+        if (tiltRAF) cancelAnimationFrame(tiltRAF);
+        rect = null;
         card.style.setProperty('--tilt-x', '0');
         card.style.setProperty('--tilt-y', '0');
         card.style.setProperty('--mouse-x', '-500px');
         card.style.setProperty('--mouse-y', '-500px');
-      });
+      }, { passive: true });
     });
   }
 

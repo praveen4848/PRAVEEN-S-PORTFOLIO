@@ -71,6 +71,7 @@
   // State
   let charCenters = [];
   const currentWeights = charElements.map(() => MIN_WEIGHT);
+  const lastAppliedWeights = charElements.map(() => -1);
 
   let mouseX = -9999;
   let mouseY = -9999;
@@ -84,6 +85,7 @@
   let currentParallaxY = 0;
 
   function recalculateCharCenters() {
+    if (isExited) return;
     charCenters = charElements.map((el) => {
       const rect = el.getBoundingClientRect();
       return {
@@ -93,15 +95,15 @@
     });
   }
 
-  window.addEventListener('resize', recalculateCharCenters);
+  window.addEventListener('resize', recalculateCharCenters, { passive: true });
   window.addEventListener('scroll', recalculateCharCenters, { passive: true });
   // Call once on init and after fonts settle
   setTimeout(recalculateCharCenters, 50);
   setTimeout(recalculateCharCenters, 300);
-  setTimeout(recalculateCharCenters, 800);
 
   // Mouse & Touch Movement
-  window.addEventListener('pointermove', (e) => {
+  function onPointerMove(e) {
+    if (isExited) return;
     mouseX = e.clientX;
     mouseY = e.clientY;
     lastMouseMoveTime = performance.now();
@@ -112,7 +114,8 @@
     const normY = (e.clientY / window.innerHeight - 0.5);
     targetParallaxX = normX * 16;
     targetParallaxY = normY * 10;
-  }, { passive: true });
+  }
+  window.addEventListener('pointermove', onPointerMove, { passive: true });
 
   overlay.addEventListener('pointerleave', () => {
     isMouseActive = false;
@@ -124,6 +127,7 @@
 
   // Touch handling
   overlay.addEventListener('touchmove', (e) => {
+    if (isExited) return;
     if (e.touches && e.touches.length > 0) {
       mouseX = e.touches[0].clientX;
       mouseY = e.touches[0].clientY;
@@ -193,13 +197,16 @@
       currentWeights[i] += 0.18 * (targetWeight - currentWeights[i]);
 
       const wghtVal = Math.round(currentWeights[i]);
-      charEl.style.fontVariationSettings = `'wght' ${wghtVal}`;
-      charEl.style.fontWeight = wghtVal;
+      if (wghtVal !== lastAppliedWeights[i]) {
+        lastAppliedWeights[i] = wghtVal;
+        charEl.style.fontVariationSettings = `'wght' ${wghtVal}`;
+        charEl.style.fontWeight = wghtVal;
 
-      // Subtle dynamic vertical micro-lift on bold peaks
-      const liftFactor = (currentWeights[i] - MIN_WEIGHT) / (MAX_WEIGHT - MIN_WEIGHT);
-      const liftPx = -7 * Math.pow(liftFactor, 1.5);
-      charEl.style.transform = `translateY(${liftPx.toFixed(1)}px)`;
+        // Subtle dynamic vertical micro-lift on bold peaks
+        const liftFactor = (currentWeights[i] - MIN_WEIGHT) / (MAX_WEIGHT - MIN_WEIGHT);
+        const liftPx = -7 * Math.pow(liftFactor, 1.5);
+        charEl.style.transform = `translateY(${liftPx.toFixed(1)}px)`;
+      }
     }
   }
 
@@ -211,6 +218,11 @@
   function triggerLaunch() {
     if (isExited) return;
     isExited = true;
+
+    // Remove window event listeners to eliminate CPU overhead after entrance
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('resize', recalculateCharCenters);
+    window.removeEventListener('scroll', recalculateCharCenters);
 
     playLaunchSound();
 
@@ -232,6 +244,10 @@
       if (window.initFlowingRoadmap) window.initFlowingRoadmap();
 
       window.portfolioEntered = true;
+      if (window.startSpaceZoom) {
+        window.startSpaceZoom();
+      }
+
       const heroVid = document.getElementById('hero-intro-video');
       if (heroVid) {
         heroVid.muted = !!window.soundMuted;
