@@ -403,23 +403,17 @@
   }
 
   // ==========================================================================
-  // 3. ANIMATION 1: 3D CELESTIAL STRING SPHERE & PARTICLE ORBITS (#bg-mesh-canvas)
-  // Inspired by celestial gyroscope / spirograph particle orbits in empty space
-  // Pure monochrome white & silver strings, 3D depth, 60-120 FPS batched rendering
+  // 3. ANIMATION 1: SPACE ASTEROIDS & COSMIC DUST PARTICLES (#bg-mesh-canvas)
+  // Subtle, minimal, aesthetic deep-space drifting micro-asteroids & stardust
   // ==========================================================================
   const meshCanvas = document.getElementById('bg-mesh-canvas');
-  let isCelestialRunning = false;
-  let celestialRAF = null;
+  let isCanvasAnimRunning = false;
+  let canvasAnimRAF = null;
 
   if (meshCanvas) {
-    const sctx = meshCanvas.getContext('2d', { alpha: true });
+    const sctx = meshCanvas.getContext('2d');
     let sWidth = (meshCanvas.width = window.innerWidth);
     let sHeight = (meshCanvas.height = window.innerHeight);
-
-    // Responsive Sphere Dimensions
-    let centerX = sWidth * 0.5;
-    let centerY = sHeight * 0.5;
-    let sphereRadius = Math.max(220, Math.min(sWidth, sHeight) * 0.38);
 
     let resizeTimer = null;
     window.addEventListener('resize', () => {
@@ -427,228 +421,309 @@
       resizeTimer = setTimeout(() => {
         sWidth = meshCanvas.width = window.innerWidth;
         sHeight = meshCanvas.height = window.innerHeight;
-        centerX = sWidth * 0.5;
-        centerY = sHeight * 0.5;
-        sphereRadius = Math.max(220, Math.min(sWidth, sHeight) * 0.38);
-        buildOrbitalRings();
       }, 150);
     }, { passive: true });
 
-    // 3D Orbital Rings Model
+    // 1. Subtle Micro-Asteroids (floating irregular polygonal space rocks)
+    const asteroids = [];
     const isMobile = window.innerWidth < 768;
-    const NUM_RINGS = isMobile ? 22 : 34;
-    const PTS_PER_RING = 48;
-    let orbitalRings = [];
+    const NUM_ASTEROIDS = isMobile ? 18 : 32;
 
-    function buildOrbitalRings() {
-      orbitalRings = [];
-      const A = sphereRadius;
-      const B = sphereRadius * 0.68;
-      const inclination = 0.98; // ~56 degrees tilt
-
-      for (let k = 0; k < NUM_RINGS; k++) {
-        const beta = (k / NUM_RINGS) * Math.PI * 2;
-        const ring = [];
-        for (let j = 0; j < PTS_PER_RING; j++) {
-          const phi = (j / PTS_PER_RING) * Math.PI * 2;
-          const x0 = A * Math.cos(phi);
-          const y0 = B * Math.sin(phi);
-          // Saddle twist core inflection for the iconic cosmic hourglass waist
-          const z0 = 0.22 * sphereRadius * Math.sin(phi * 2);
-
-          // Inclination around X
-          const cosI = Math.cos(inclination);
-          const sinI = Math.sin(inclination);
-          const x1 = x0;
-          const y1 = y0 * cosI - z0 * sinI;
-          const z1 = y0 * sinI + z0 * cosI;
-
-          // Precession beta around Y
-          const cosB = Math.cos(beta);
-          const sinB = Math.sin(beta);
-          const x2 = x1 * cosB + z1 * sinB;
-          const y2 = y1;
-          const z2 = -x1 * sinB + z1 * cosB;
-
-          ring.push({ x: x2, y: y2, z: z2 });
-        }
-        orbitalRings.push(ring);
+    class Asteroid {
+      constructor() {
+        this.reset(true);
       }
-    }
-    buildOrbitalRings();
 
-    // Surrounding Ambient Celestial Dust Stars
-    const NUM_DUST = isMobile ? 25 : 50;
-    const dustParticles = [];
-    for (let i = 0; i < NUM_DUST; i++) {
-      const theta = Math.random() * Math.PI * 2;
-      const phi = (Math.random() - 0.5) * Math.PI;
-      const dist = sphereRadius * (1.05 + Math.random() * 0.95);
-      dustParticles.push({
-        x: dist * Math.cos(phi) * Math.cos(theta),
-        y: dist * Math.sin(phi),
-        z: dist * Math.cos(phi) * Math.sin(theta),
-        radius: Math.random() * 0.7 + 0.35,
-        twinklePhase: Math.random() * Math.PI * 2,
-        twinkleSpeed: Math.random() * 0.02 + 0.015
-      });
-    }
+      reset(init = false) {
+        this.x = init ? Math.random() * sWidth : (Math.random() > 0.5 ? -30 : sWidth + 30);
+        this.y = Math.random() * sHeight;
+        this.radius = Math.random() * 3.0 + 1.6; // Small, subtle
+        this.vx = (Math.random() - 0.5) * 0.32;
+        this.vy = (Math.random() - 0.5) * 0.28;
+        this.angle = Math.random() * Math.PI * 2;
+        this.angularVelocity = (Math.random() - 0.5) * 0.012;
+        this.alpha = Math.random() * 0.32 + 0.18;
+        this.isGoldTinted = Math.random() < 0.12;
 
-    // Dynamic 3D Euler Angles & Parallax
-    let rotX = 0.35;
-    let rotY = 0.0;
-    let targetTiltX = 0;
-    let targetTiltY = 0;
-    let curTiltX = 0;
-    let curTiltY = 0;
-
-    window.addEventListener('mousemove', (e) => {
-      targetTiltX = ((e.clientY / sHeight) - 0.5) * 0.32;
-      targetTiltY = ((e.clientX / sWidth) - 0.5) * 0.32;
-    }, { passive: true });
-
-    function renderCelestialSphere() {
-      if (!isCelestialRunning || document.hidden) {
-        celestialRAF = null;
-        return;
-      }
-      celestialRAF = requestAnimationFrame(renderCelestialSphere);
-
-      sctx.clearRect(0, 0, sWidth, sHeight);
-
-      // Smooth continuous precession & mouse tilt
-      rotY += 0.0028;
-      rotX += 0.0014;
-      curTiltX += (targetTiltX - curTiltX) * 0.04;
-      curTiltY += (targetTiltY - curTiltY) * 0.04;
-
-      const totalRotX = rotX + curTiltX;
-      const totalRotY = rotY + curTiltY;
-
-      const cosY = Math.cos(totalRotY);
-      const sinY = Math.sin(totalRotY);
-      const cosX = Math.cos(totalRotX);
-      const sinX = Math.sin(totalRotX);
-      const focalLength = 1100;
-
-      // 1. Soft Central Caustic Glow Halo (Subtle stellar core)
-      const grad = sctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, sphereRadius * 0.55);
-      grad.addColorStop(0, 'rgba(255, 255, 255, 0.10)');
-      grad.addColorStop(0.35, 'rgba(255, 255, 255, 0.035)');
-      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      sctx.fillStyle = grad;
-      sctx.beginPath();
-      sctx.arc(centerX, centerY, sphereRadius * 0.55, 0, Math.PI * 2);
-      sctx.fill();
-
-      // 2. Render 3D Dotted Orbital String Rings
-      sctx.setLineDash([1.4, 4.2]);
-      sctx.lineWidth = 0.85;
-
-      for (let k = 0; k < orbitalRings.length; k++) {
-        const ring = orbitalRings[k];
-        let avgZ = 0;
-
-        // Project ring points
-        const projected = [];
-        for (let j = 0; j < ring.length; j++) {
-          const pt = ring[j];
-          // Rotate Y
-          const x1 = pt.x * cosY + pt.z * sinY;
-          const y1 = pt.y;
-          const z1 = -pt.x * sinY + pt.z * cosY;
-
-          // Rotate X
-          const x2 = x1;
-          const y2 = y1 * cosX - z1 * sinX;
-          const z2 = y1 * sinX + z1 * cosX;
-
-          avgZ += z2;
-          const scale = focalLength / (focalLength + z2);
-          projected.push({
-            px: centerX + x2 * scale,
-            py: centerY + y2 * scale
-          });
+        // Generate irregular rock vertices
+        this.numVertices = Math.floor(Math.random() * 3) + 5;
+        this.vertexOffsets = [];
+        for (let i = 0; i < this.numVertices; i++) {
+          this.vertexOffsets.push(0.72 + Math.random() * 0.48);
         }
-        avgZ /= ring.length;
+      }
 
-        // Depth lighting: front strings brighter, back strings softer
-        const depthNorm = Math.max(0, Math.min(1, (avgZ + sphereRadius) / (sphereRadius * 2)));
-        const depthRatio = 1.0 - depthNorm;
-        const alpha = Math.max(0.12, Math.min(0.78, 0.12 + depthRatio * 0.66));
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.angle += this.angularVelocity;
 
-        sctx.strokeStyle = `rgba(255, 255, 255, ${alpha.toFixed(3)})`;
+        // Wrap around screen edges
+        if (this.x < -40) this.x = sWidth + 40;
+        if (this.x > sWidth + 40) this.x = -40;
+        if (this.y < -40) this.y = sHeight + 40;
+        if (this.y > sHeight + 40) this.y = -40;
+      }
+
+      draw() {
+        sctx.save();
+        sctx.translate(this.x, this.y);
+        sctx.rotate(this.angle);
+
         sctx.beginPath();
-        sctx.moveTo(projected[0].px, projected[0].py);
-        for (let p = 1; p < projected.length; p++) {
-          sctx.lineTo(projected[p].px, projected[p].py);
+        for (let i = 0; i < this.numVertices; i++) {
+          const a = (i / this.numVertices) * Math.PI * 2;
+          const r = this.radius * this.vertexOffsets[i];
+          const px = Math.cos(a) * r;
+          const py = Math.sin(a) * r;
+          if (i === 0) sctx.moveTo(px, py);
+          else sctx.lineTo(px, py);
         }
         sctx.closePath();
-        sctx.stroke();
-      }
 
-      // Reset line dash for starlight points
-      sctx.setLineDash([]);
-
-      // 3. Batched Ambient Celestial Dust Particles
-      sctx.fillStyle = '#FFFFFF';
-      for (let i = 0; i < dustParticles.length; i++) {
-        const d = dustParticles[i];
-        d.twinklePhase += d.twinkleSpeed;
-
-        // Rotate in 3D
-        const x1 = d.x * cosY + d.z * sinY;
-        const y1 = d.y;
-        const z1 = -d.x * sinY + d.z * cosY;
-
-        const x2 = x1;
-        const y2 = y1 * cosX - z1 * sinX;
-        const z2 = y1 * sinX + z1 * cosX;
-
-        const scale = focalLength / (focalLength + z2);
-        const px = centerX + x2 * scale;
-        const py = centerY + y2 * scale;
-
-        const depthNorm = Math.max(0, Math.min(1, (z2 + sphereRadius * 1.5) / (sphereRadius * 3)));
-        const depthRatio = 1.0 - depthNorm;
-        const twinkle = 0.75 + 0.25 * Math.sin(d.twinklePhase);
-        const alpha = Math.max(0.1, Math.min(0.85, (0.15 + depthRatio * 0.6) * twinkle));
-
-        sctx.globalAlpha = alpha;
-        sctx.beginPath();
-        sctx.arc(px, py, d.radius * scale, 0, Math.PI * 2);
+        // Shaded surface facet
+        if (this.isGoldTinted) {
+          sctx.fillStyle = `rgba(255, 201, 0, ${this.alpha * 0.8})`;
+          sctx.strokeStyle = `rgba(255, 201, 0, ${this.alpha * 1.2})`;
+        } else {
+          sctx.fillStyle = `rgba(148, 163, 184, ${this.alpha * 0.55})`;
+          sctx.strokeStyle = `rgba(226, 232, 240, ${this.alpha * 0.85})`;
+        }
+        sctx.lineWidth = 0.8;
         sctx.fill();
+        sctx.stroke();
+
+        sctx.restore();
       }
-      sctx.globalAlpha = 1.0;
     }
 
-    function startCelestialSphere() {
-      if (isCelestialRunning) return;
-      isCelestialRunning = true;
-      if (!celestialRAF) {
-        renderCelestialSphere();
+    for (let i = 0; i < NUM_ASTEROIDS; i++) {
+      asteroids.push(new Asteroid());
+    }
+
+    // 2. Cosmic Tiny Dust Particles, Harmonic Waves & Clean Constellation Field
+    const stardust = [];
+    const NUM_DUST = isMobile ? 65 : 105;
+    let canvasMouseX = -1000;
+    let canvasMouseY = -1000;
+
+    window.addEventListener('mousemove', (e) => {
+      canvasMouseX = e.clientX;
+      canvasMouseY = e.clientY;
+    }, { passive: true });
+
+    window.addEventListener('mouseleave', () => {
+      canvasMouseX = -1000;
+      canvasMouseY = -1000;
+    });
+
+    class DustParticle {
+      constructor() {
+        this.x = Math.random() * sWidth;
+        this.y = Math.random() * sHeight;
+        this.radius = Math.random() * 1.1 + 0.45;
+        this.vx = (Math.random() - 0.5) * 0.22;
+        this.vy = (Math.random() - 0.5) * 0.22;
+        this.baseAlpha = Math.random() * 0.42 + 0.18;
+        this.pulseSpeed = Math.random() * 0.02 + 0.008;
+        this.pulsePhase = Math.random() * Math.PI * 2;
+        this.wavePhase = Math.random() * Math.PI * 2;
+        this.isGold = Math.random() < 0.12;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy + Math.sin(this.wavePhase) * 0.1;
+        this.pulsePhase += this.pulseSpeed;
+        this.wavePhase += 0.015;
+
+        // Subtle gentle drift away from cursor if very close
+        if (canvasMouseX > 0 && canvasMouseY > 0) {
+          const dx = this.x - canvasMouseX;
+          const dy = this.y - canvasMouseY;
+          const distSq = dx * dx + dy * dy;
+          if (distSq < 6400 && distSq > 50) { // 80px
+            const dist = Math.sqrt(distSq);
+            const force = (1 - dist / 80) * 0.5;
+            this.x += (dx / dist) * force;
+            this.y += (dy / dist) * force;
+          }
+        }
+
+        if (this.x < 0) this.x = sWidth;
+        if (this.x > sWidth) this.x = 0;
+        if (this.y < 0) this.y = sHeight;
+        if (this.y > sHeight) this.y = 0;
+      }
+
+      draw() {
+        const currentAlpha = Math.max(0.1, this.baseAlpha + Math.sin(this.pulsePhase) * 0.2);
+
+        sctx.save();
+        sctx.beginPath();
+        sctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+
+        if (this.isGold) {
+          sctx.fillStyle = `rgba(255, 201, 0, ${currentAlpha * 0.75})`;
+        } else {
+          sctx.fillStyle = `rgba(245, 243, 239, ${currentAlpha * 0.85})`;
+        }
+
+        sctx.fill();
+        sctx.restore();
       }
     }
-    window.startCelestialSphere = startCelestialSphere;
-    window.startSpaceZoom = startCelestialSphere; // Backward compatibility alias
+
+    for (let i = 0; i < NUM_DUST; i++) {
+      stardust.push(new DustParticle());
+    }
+
+    // 3. Graceful, Restrained Shooting Stars
+    const shootingStars = [];
+    class ShootingStar {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        const angleVariants = [
+          Math.PI / 4 + (Math.random() - 0.5) * 0.12,
+          Math.PI / 3 + (Math.random() - 0.5) * 0.1
+        ];
+        this.angle = angleVariants[Math.floor(Math.random() * angleVariants.length)];
+        this.x = Math.random() * (sWidth * 0.75);
+        this.y = Math.random() * (sHeight * 0.4);
+        this.length = Math.random() * 70 + 60;
+        this.speed = Math.random() * 8 + 11;
+        this.vx = Math.cos(this.angle) * this.speed;
+        this.vy = Math.sin(this.angle) * this.speed;
+        this.life = 0;
+        this.maxLife = Math.random() * 40 + 30;
+        this.isDying = false;
+        this.color = Math.random() > 0.4 ? '#FFF7C2' : '#FFC900';
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life++;
+        if (this.life >= this.maxLife || this.x > sWidth + 100 || this.y > sHeight + 100) {
+          this.isDying = true;
+        }
+      }
+
+      draw() {
+        const progress = this.life / this.maxLife;
+        const alpha = progress < 0.15 ? progress / 0.15 : Math.max(0, 1 - (progress - 0.15) / 0.85);
+        if (alpha <= 0) return;
+
+        const tailX = this.x - Math.cos(this.angle) * this.length;
+        const tailY = this.y - Math.sin(this.angle) * this.length;
+
+        const grad = sctx.createLinearGradient(tailX, tailY, this.x, this.y);
+        grad.addColorStop(0, 'rgba(255, 201, 0, 0)');
+        grad.addColorStop(0.6, `rgba(255, 201, 0, ${alpha * 0.35})`);
+        grad.addColorStop(1, `rgba(255, 255, 255, ${alpha * 0.85})`);
+
+        sctx.save();
+        sctx.strokeStyle = grad;
+        sctx.lineWidth = 1.3;
+        sctx.beginPath();
+        sctx.moveTo(tailX, tailY);
+        sctx.lineTo(this.x, this.y);
+        sctx.stroke();
+
+        sctx.fillStyle = this.color;
+        sctx.beginPath();
+        sctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2);
+        sctx.fill();
+        sctx.restore();
+      }
+    }
+
+    let nextShootingStarTime = Date.now() + 2000;
+
+    function renderSpaceAsteroids() {
+      if (!isCanvasAnimRunning || document.hidden) {
+        canvasAnimRAF = null;
+        return;
+      }
+      canvasAnimRAF = requestAnimationFrame(renderSpaceAsteroids);
+      sctx.clearRect(0, 0, sWidth, sHeight);
+
+      // Draw Stardust Particles
+      for (let i = 0; i < stardust.length; i++) {
+        stardust[i].update();
+        stardust[i].draw();
+      }
+
+      // Draw Clean Proximity Constellation Lines (ONLY star-to-star, NEVER to cursor)
+      sctx.lineWidth = 0.55;
+      for (let i = 0; i < stardust.length; i++) {
+        for (let j = i + 1; j < stardust.length; j++) {
+          const dx = stardust[i].x - stardust[j].x;
+          const dy = stardust[i].y - stardust[j].y;
+          const distSq = dx * dx + dy * dy;
+          if (distSq < 6400) { // 80 * 80
+            const dist = Math.sqrt(distSq);
+            const lineAlpha = (1 - dist / 80) * 0.12;
+            sctx.strokeStyle = `rgba(226, 232, 240, ${lineAlpha})`;
+            sctx.beginPath();
+            sctx.moveTo(stardust[i].x, stardust[i].y);
+            sctx.lineTo(stardust[j].x, stardust[j].y);
+            sctx.stroke();
+          }
+        }
+      }
+
+      // Periodic Shooting Stars (Clean, graceful, occasional)
+      const now = Date.now();
+      if (now > nextShootingStarTime) {
+        if (shootingStars.length < 2) {
+          shootingStars.push(new ShootingStar());
+        }
+        nextShootingStarTime = now + Math.random() * 2500 + 2200;
+      }
+
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        shootingStars[i].update();
+        shootingStars[i].draw();
+        if (shootingStars[i].isDying) {
+          shootingStars.splice(i, 1);
+        }
+      }
+
+      // Draw Floating Geometric Asteroids
+      for (let i = 0; i < asteroids.length; i++) {
+        asteroids[i].update();
+        asteroids[i].draw();
+      }
+    }
+
+    function startBackgroundAnimation() {
+      if (isCanvasAnimRunning) return;
+      isCanvasAnimRunning = true;
+      if (!canvasAnimRAF) {
+        renderSpaceAsteroids();
+      }
+    }
+    window.startBackgroundAnimation = startBackgroundAnimation;
+    window.startCelestialSphere = startBackgroundAnimation;
+    window.startSpaceZoom = startBackgroundAnimation;
 
     // Visibility Listener: pause when tab hidden to preserve CPU/battery
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
-        if (celestialRAF) {
-          cancelAnimationFrame(celestialRAF);
-          celestialRAF = null;
+        if (canvasAnimRAF) {
+          cancelAnimationFrame(canvasAnimRAF);
+          canvasAnimRAF = null;
         }
-      } else if (isCelestialRunning && !celestialRAF) {
-        renderCelestialSphere();
+      } else if (isCanvasAnimRunning && !canvasAnimRAF) {
+        renderSpaceAsteroids();
       }
     });
 
-    // Auto-start if portfolio already entered or overlay hidden
-    const welcomeOverlayEl = document.getElementById('welcome-overlay');
-    if (!welcomeOverlayEl || welcomeOverlayEl.classList.contains('hidden') || window.portfolioEntered) {
-      startCelestialSphere();
-    }
+    startBackgroundAnimation();
   }
 
   // ==========================================================================
