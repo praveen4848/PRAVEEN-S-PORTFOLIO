@@ -175,30 +175,26 @@
   window.setGlobalSoundMuted = setGlobalSoundMuted;
 
   // ==========================================================================
-  // 1. SINGLE CELLULAR METALLIC CURSOR (NO CIRCLE, RAF-THROTTLED)
+  // 1. SINGLE CELLULAR METALLIC CURSOR (NO CIRCLE, HARDWARE-ACCELERATED)
   // ==========================================================================
   const cursorPointer = document.getElementById('cursor-pointer');
-  let cursorRAF = false;
+  let isCursorActive = false;
 
-  window.addEventListener('mousemove', (e) => {
+  function updateCursorPos(e) {
     mouseX = e.clientX;
     mouseY = e.clientY;
 
-    if (!cursorRAF) {
-      cursorRAF = true;
-      requestAnimationFrame(() => {
-        if (cursorPointer) {
-          cursorPointer.style.left = `${mouseX}px`;
-          cursorPointer.style.top = `${mouseY}px`;
-          if (!cursorPointer.classList.contains('active')) {
-            cursorPointer.classList.add('active');
-            document.body.classList.add('custom-cursor-active');
-          }
-        }
-        cursorRAF = false;
-      });
+    if (cursorPointer) {
+      cursorPointer.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+      if (!isCursorActive) {
+        isCursorActive = true;
+        cursorPointer.classList.add('active');
+        document.body.classList.add('custom-cursor-active');
+      }
     }
-  }, { passive: true });
+  }
+
+  window.addEventListener('pointermove', updateCursorPos, { passive: true });
 
   window.addEventListener('mousedown', () => {
     playClickSound(720, 0.04);
@@ -579,7 +575,11 @@
       }
     });
 
-    startSpaceZoom();
+    // Start background space zoom only when welcome overlay is not active
+    const welcomeOverlayEl = document.getElementById('welcome-overlay');
+    if (!welcomeOverlayEl || welcomeOverlayEl.classList.contains('hidden') || window.portfolioEntered) {
+      startSpaceZoom();
+    }
   }
 
   // ==========================================================================

@@ -261,11 +261,11 @@
     // Smooth transition between magnetic mouse hover and ambient traveling wave
     const mouseInfluence = isMouseActive && timeSinceLastMove < 2200 ? 1.0 : Math.max(0, 1.0 - (timeSinceLastMove - 1200) / 1000);
 
-    // Parallax easing on ridge lines
+    // Parallax easing on ridge lines (GPU-accelerated translate3d)
     if (ridgeImage) {
       currentParallaxX += (targetParallaxX - currentParallaxX) * 0.08;
       currentParallaxY += (targetParallaxY - currentParallaxY) * 0.08;
-      ridgeImage.style.transform = `scale(1.04) translate(${currentParallaxX.toFixed(2)}px, ${currentParallaxY.toFixed(2)}px)`;
+      ridgeImage.style.transform = `scale(1.04) translate3d(${currentParallaxX.toFixed(2)}px, ${currentParallaxY.toFixed(2)}px, 0)`;
     }
 
     // Update each character weight
@@ -299,16 +299,17 @@
       // Smooth spring lerp: factor 0.18 matching Christen Dijoux Pa implementation
       currentWeights[i] += 0.18 * (targetWeight - currentWeights[i]);
 
-      const wghtVal = Math.round(currentWeights[i]);
+      // Step weight in increments of 8 to eliminate FreeType glyph-cache thrashing
+      const wghtVal = Math.round(currentWeights[i] / 8) * 8;
       if (wghtVal !== lastAppliedWeights[i]) {
         lastAppliedWeights[i] = wghtVal;
         charEl.style.fontVariationSettings = `'wght' ${wghtVal}`;
         charEl.style.fontWeight = wghtVal;
 
-        // Subtle dynamic vertical micro-lift on bold peaks
+        // Subtle dynamic vertical micro-lift on bold peaks (hardware-accelerated translate3d)
         const liftFactor = (currentWeights[i] - MIN_WEIGHT) / (MAX_WEIGHT - MIN_WEIGHT);
         const liftPx = -7 * Math.pow(liftFactor, 1.5);
-        charEl.style.transform = `translateY(${liftPx.toFixed(1)}px)`;
+        charEl.style.transform = `translate3d(0, ${liftPx.toFixed(1)}px, 0)`;
       }
     }
   }
