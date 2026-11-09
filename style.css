@@ -147,12 +147,14 @@ body {
 }
 
 /* ==========================================================================
-   WELCOME SCREEN (Matching Picture 2: Gray Ball Drop -> Backdrop -> PRAVEEN -> PORTFOLIO -> Disappear like Dot Dot)
+   CHRISTEN DIJOUX KINETIC TYPOGRAPHY & RIDGE LINES ENTRANCE
+   Inspired by https://christendijoux.com/
+   Joy Division Ridge Lines + Big Shoulders Display Variable-Weight Wave
    ========================================================================== */
 #welcome-overlay {
   position: fixed;
   inset: 0;
-  background-color: #121214;
+  background-color: #050505;
   z-index: 9000;
   display: flex;
   flex-direction: column;
@@ -160,12 +162,7 @@ body {
   align-items: center;
   transition: opacity 0.85s var(--ease-out-expo), visibility 0.85s;
   overflow: hidden;
-  cursor: grab;
   user-select: none;
-}
-
-#welcome-overlay:active {
-  cursor: grabbing;
 }
 
 #welcome-overlay.hidden {
@@ -174,140 +171,129 @@ body {
   pointer-events: none;
 }
 
-/* Atmospheric 16:9 Widescreen Portrait Backdrop (21hrs.space aesthetic) */
-.welcome-backdrop {
+/* Joy Division Topographic Ridge Lines Backdrop */
+.cd-ridge-container {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle at 50% 40%, rgba(8, 9, 11, 0.2) 0%, rgba(8, 9, 11, 0.75) 75%, var(--bg-void) 100%), url('assets/welcome_bg.jpg');
-  background-size: cover;
-  background-position: center 30%;
-  background-repeat: no-repeat;
-  opacity: 0;
-  filter: contrast(110%) brightness(0.92);
-  transition: opacity 1.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease;
+  overflow: hidden;
+  pointer-events: none;
   z-index: 1;
 }
 
-.welcome-backdrop.visible {
-  opacity: 1;
-}
-
-.welcome-backdrop.disintegrating {
-  opacity: 0;
-  filter: blur(15px) brightness(1.2);
-  transition: opacity 0.5s ease, filter 0.5s ease;
-}
-
-#intro-canvas {
+.cd-ridge-image {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 2;
+  object-fit: cover;
+  object-position: center 32%;
+  opacity: 0.82;
+  filter: contrast(130%) brightness(1.05);
+  transform: scale(1.02);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.cd-ridge-vignette {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #050505 0%,
+    rgba(5, 5, 5, 0.15) 28%,
+    rgba(5, 5, 5, 0.40) 65%,
+    #050505 94%
+  );
   pointer-events: none;
 }
 
-/* ==========================================================================
-   POSTMINIMAL TESSERACT 4D SPHERE THEME
-   Exact Colors from https://tesseract.postminimal.agency:
-   --ink: #121214 (Void canvas)
-   --paper: #f4f4f4 (Crisp off-white typography)
-   --ana: #ffe5cf (Warm champagne peach sphere glow)
-   --kata: #b7cbf2 (Cool celestial lavender-blue sphere glow)
-   ========================================================================== */
-.welcome-stage-tesseract {
+/* Stage & Title Container */
+.cd-welcome-stage {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 24px;
-  max-width: 900px;
-  pointer-events: none; /* Allows mouse dragging the 4D sphere through the stage */
+  width: 100%;
+  max-width: 1400px;
+  padding: 0 16px;
+  margin-top: 12vh;
+  pointer-events: auto;
 }
 
-.welcome-typography-wrap-tesseract {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.cd-title-wrap {
+  width: 100%;
+  text-align: center;
   margin-bottom: 24px;
 }
 
-/* Postminimal Title: Pure Name matching CHRISTEN bold extended geometry in Brushed Silver Chrome */
-.welcome-text-line-tesseract {
-  font-family: 'Syncopate', sans-serif;
-  font-size: clamp(2.8rem, 7.5vw, 5.8rem);
-  font-weight: 700;
-  letter-spacing: 0.04em;
+/* Big Shoulders Display Variable-Weight Kinetic Heading */
+.cd-display-name {
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-size: clamp(3.2rem, 11vw, 11.5rem);
+  line-height: 0.9;
   text-transform: uppercase;
-  line-height: 1;
-  margin-bottom: 14px;
-
-  /* Multi-tone Liquid Silver Metallic Sheen */
-  background: linear-gradient(
-    115deg,
-    #94A3B8 0%,
-    #E2E8F0 18%,
-    #FFFFFF 35%,
-    #94A3B8 52%,
-    #F8FAFC 68%,
-    #CBD5E1 82%,
-    #64748B 100%
-  );
-  background-size: 220% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: silverSheenSweep 8s linear infinite;
-
-  /* Specular chrome drop shadow */
-  filter: drop-shadow(0 2px 2px rgba(255, 255, 255, 0.45)) 
-          drop-shadow(0 10px 30px rgba(0, 0, 0, 0.95))
-          drop-shadow(0 0 25px rgba(226, 232, 240, 0.3));
-  will-change: background-position;
+  letter-spacing: -0.01em;
+  color: #F2F2EE;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: baseline;
+  user-select: none;
+  margin: 0;
+  padding: 0;
+  font-variation-settings: 'wght' 200;
 }
 
-@keyframes silverSheenSweep {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 220% 50%; }
+.cd-display-name .word {
+  display: inline-flex;
+  align-items: baseline;
 }
 
-.welcome-sub-line-tesseract {
-  font-family: var(--font-mono);
-  font-size: clamp(0.8rem, 1.2vw, 1.05rem);
-  font-weight: 500;
-  letter-spacing: 0.44em;
-  text-transform: uppercase;
-  line-height: 1;
-
-  /* Liquid Silver Satin finish */
-  background: linear-gradient(90deg, #94A3B8 0%, #FFFFFF 50%, #CBD5E1 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  filter: drop-shadow(0 2px 15px rgba(0, 0, 0, 0.9));
+.cd-display-name .char-space {
+  display: inline-block;
+  width: clamp(1rem, 3.2vw, 3.8rem);
 }
 
-/* Postminimal Action Pill Button - Brushed Silver Chrome */
-.welcome-launch-pill-tesseract {
-  pointer-events: auto; /* Clickable */
+.cd-display-name .char {
+  display: inline-block;
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-variation-settings: 'wght' 200;
+  font-weight: 200;
+  color: #F2F2EE;
+  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.95), 0 0 40px rgba(242, 242, 238, 0.12);
+  transition: transform 0.12s ease-out, color 0.15s ease;
+  will-change: font-variation-settings, font-weight, transform;
+}
+
+/* Responsive wrap on narrower viewports */
+@media (max-width: 768px) {
+  .cd-display-name {
+    flex-direction: column;
+    align-items: center;
+    line-height: 0.95;
+    font-size: clamp(3.2rem, 16vw, 6.5rem);
+  }
+  .cd-display-name .char-space {
+    display: none;
+  }
+}
+
+/* Christen Dijoux Action Pill Button */
+.cd-launch-pill {
+  pointer-events: auto;
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   padding: 12px 28px;
-  background: rgba(18, 18, 20, 0.85);
-  border: 1px solid rgba(226, 232, 240, 0.35);
+  background: rgba(12, 12, 14, 0.85);
+  border: 1px solid rgba(242, 242, 238, 0.28);
   border-radius: 9999px;
   backdrop-filter: blur(14px);
-  color: #F8FAFC;
+  color: #F2F2EE;
   font-family: var(--font-mono);
   font-size: 0.74rem;
   letter-spacing: 0.22em;
@@ -315,42 +301,48 @@ body {
   font-weight: 600;
   cursor: pointer;
   outline: none;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(226, 232, 240, 0.22);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(242, 242, 238, 0.12);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
   margin-top: 14px;
 }
 
-.welcome-launch-pill-tesseract:hover,
-.welcome-launch-pill-tesseract:focus-visible {
-  background: rgba(28, 30, 36, 0.95);
-  border-color: #FFFFFF;
-  color: #FFFFFF;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 255, 255, 0.5);
+.cd-launch-pill:hover,
+.cd-launch-pill:focus-visible {
+  background: #F2F2EE;
+  border-color: #F2F2EE;
+  color: #050505;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.9), 0 0 30px rgba(242, 242, 238, 0.45);
   transform: translateY(-2px);
 }
 
-.launch-dot-tesseract {
+.cd-launch-pill:hover .cd-launch-dot {
+  background: #050505;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.cd-launch-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #E2E8F0;
-  box-shadow: 0 0 8px #FFFFFF, 0 0 16px rgba(226, 232, 240, 0.7);
-  animation: tesseractPulse 2s infinite ease-in-out;
+  background: #F2F2EE;
+  box-shadow: 0 0 8px #FFFFFF, 0 0 14px rgba(242, 242, 238, 0.7);
+  animation: cdDotPulse 2s infinite ease-in-out;
 }
 
-@keyframes tesseractPulse {
+@keyframes cdDotPulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.35; transform: scale(0.75); }
 }
 
-.welcome-hint-tesseract {
+.cd-welcome-hint {
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.20em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(242, 242, 238, 0.45);
   margin-top: 18px;
+  text-align: center;
 }
 
 /* ==========================================================================

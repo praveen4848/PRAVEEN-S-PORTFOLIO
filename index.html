@@ -8,11 +8,11 @@
   <meta name="description"
     content="Portfolio of Praveen Kumar Kakaraparthi. Java Full-Stack Developer & CSE Graduate (2026). Hands-on software builder with Java, SQL, React, Gemini AI, and scalable cloud architectures.">
 
-  <!-- Google Fonts: Instrument Serif, DM Sans, JetBrains Mono (Sarthak Sharma aesthetic) -->
+  <!-- Google Fonts: Big Shoulders Display, Geist, DM Sans, Instrument Serif, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Syncopate:wght@700&family=Syne:wght@800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@100..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Syncopate:wght@700&family=Syne:wght@800&display=swap"
     rel="stylesheet">
 
   <!-- Lucide Icons CDN -->
@@ -63,32 +63,42 @@
   </div>
 
   <!-- ========================================================================
-       WELCOME EXPERIENCE (Postminimal Tesseract 4D Sphere Simulation)
-       Exact Colors: #121214, #ffe5cf, #b7cbf2, #f4f4f4
-       No logo — Just PRAVEEN & PORTFOLIO with interactive 4D Sphere behind
+       WELCOME EXPERIENCE (Christen Dijoux Magnetic Typography & Ridge Lines)
+       Inspired by https://christendijoux.com/
+       Joy Division Ridge Lines + Big Shoulders Display Variable-Weight Wave
        ======================================================================== -->
-  <div id="welcome-overlay" title="Click anywhere to enter">
-    <div id="welcome-backdrop" class="welcome-backdrop"></div>
-    <canvas id="intro-canvas"></canvas>
+  <div id="welcome-overlay" class="welcome-overlay-cd" title="Click anywhere to enter">
+    <!-- Mountain Ridge Contour Lines Backdrop -->
+    <div class="cd-ridge-container" id="cd-ridge-container">
+      <img src="assets/ridge-lines.png" alt="Joy Division Ridge Lines" class="cd-ridge-image" id="cd-ridge-image">
+      <div class="cd-ridge-vignette"></div>
+    </div>
 
-    <div class="welcome-stage welcome-stage-tesseract">
-      <!-- Minimalist Typography: Just Name and Portfolio (No Logo) -->
-      <div class="welcome-typography-wrap-tesseract">
-        <h1 id="welcome-title-praveen" class="welcome-text-line-tesseract">PRAVEEN</h1>
-        <div id="welcome-title-portfolio" class="welcome-sub-line-tesseract">PORTFOLIO</div>
+    <!-- Center Stage: Kinetic Magnetic Typography -->
+    <div class="cd-welcome-stage">
+      <div class="cd-title-wrap">
+        <h1 id="cd-name-heading" class="cd-display-name" aria-label="Praveen Portfolio">
+          <span class="word word-praveen">
+            <span class="char" data-char="P">P</span><span class="char" data-char="R">R</span><span class="char" data-char="A">A</span><span class="char" data-char="V">V</span><span class="char" data-char="E">E</span><span class="char" data-char="E">E</span><span class="char" data-char="N">N</span>
+          </span>
+          <span class="char-space">&nbsp;</span>
+          <span class="word word-portfolio">
+            <span class="char" data-char="P">P</span><span class="char" data-char="O">O</span><span class="char" data-char="R">R</span><span class="char" data-char="T">T</span><span class="char" data-char="F">F</span><span class="char" data-char="O">O</span><span class="char" data-char="L">L</span><span class="char" data-char="I">I</span><span class="char" data-char="O">O</span>
+          </span>
+        </h1>
       </div>
 
-      <!-- Postminimal Subtle Action Button -->
-      <button id="welcome-trigger" class="welcome-launch-pill-tesseract" aria-label="Enter Portfolio">
-        <span class="launch-dot-tesseract"></span>
-        <span class="launch-label">ENTER PORTFOLIO</span>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="launch-arrow">
+      <!-- Action Pill Button -->
+      <button id="welcome-trigger" class="cd-launch-pill" aria-label="Enter Portfolio">
+        <span class="cd-launch-dot"></span>
+        <span class="cd-launch-label">ENTER PORTFOLIO</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cd-launch-arrow">
           <line x1="5" y1="12" x2="19" y2="12"></line>
           <polyline points="12 5 19 12 12 19"></polyline>
         </svg>
       </button>
 
-      <div class="welcome-hint-tesseract">DRAG TO ROTATE 4D SPHERE • CLICK TO ENTER</div>
+      <div class="cd-welcome-hint">HOVER TO MORPH WEIGHT • CLICK ANYWHERE TO ENTER</div>
     </div>
 
     <!-- Skip Button -->
