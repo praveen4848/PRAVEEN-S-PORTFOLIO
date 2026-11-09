@@ -410,12 +410,13 @@
   }
 
   // ==========================================================================
-  // 3. ANIMATION 1: SPACE ASTEROIDS & COSMIC DUST PARTICLES (#bg-mesh-canvas)
-  // High-performance batched canvas rendering: zero save/restore overhead, 60-120 FPS
+  // 3. ANIMATION 1: 3D SPACE WARP ZOOM (#bg-mesh-canvas)
+  // Deep-space forward warp zoom: particles move towards the viewer smoothly
+  // Ultra-fast batched canvas rendering: zero save/restore overhead, 60-120 FPS
   // ==========================================================================
   const meshCanvas = document.getElementById('bg-mesh-canvas');
-  let isCanvasAnimRunning = false;
-  let canvasAnimRAF = null;
+  let isSpaceZoomRunning = false;
+  let spaceZoomRAF = null;
 
   if (meshCanvas) {
     const sctx = meshCanvas.getContext('2d', { alpha: true });
@@ -431,256 +432,154 @@
       }, 150);
     }, { passive: true });
 
+    // 3D Space Zoom Starfield - Adaptive density for 60/120 FPS
     const isMobile = window.innerWidth < 768;
+    const NUM_ZOOM_STARS = isMobile ? 85 : 175;
+    const MAX_DEPTH = 1400;
+    const zoomStars = [];
+    const zoomSpeed = 2.4;
 
-    // 1. Subtle Micro-Asteroids (14 on desktop, 8 on mobile)
-    const NUM_ASTEROIDS = isMobile ? 8 : 14;
-    const asteroids = [];
-
-    class Asteroid {
-      constructor() {
-        this.reset(true);
-      }
-
-      reset(init = false) {
-        this.x = init ? Math.random() * sWidth : (Math.random() > 0.5 ? -30 : sWidth + 30);
-        this.y = Math.random() * sHeight;
-        this.radius = Math.random() * 2.8 + 1.5;
-        this.vx = (Math.random() - 0.5) * 0.28;
-        this.vy = (Math.random() - 0.5) * 0.24;
-        this.angle = Math.random() * Math.PI * 2;
-        this.angularVelocity = (Math.random() - 0.5) * 0.01;
-        this.isGold = Math.random() < 0.12;
-        this.numVertices = 6;
-        this.offsets = [0.8, 1.15, 0.9, 1.2, 0.85, 1.1];
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.angle += this.angularVelocity;
-
-        if (this.x < -30) this.x = sWidth + 30;
-        if (this.x > sWidth + 30) this.x = -30;
-        if (this.y < -30) this.y = sHeight + 30;
-        if (this.y > sHeight + 30) this.y = -30;
-      }
-    }
-
-    for (let i = 0; i < NUM_ASTEROIDS; i++) {
-      asteroids.push(new Asteroid());
-    }
-
-    // 2. Batched Stardust Particles (55 on desktop, 35 on mobile)
-    const NUM_DUST = isMobile ? 35 : 55;
-    const stardust = [];
-    let canvasMouseX = -1000;
-    let canvasMouseY = -1000;
+    let targetParallaxX = 0;
+    let targetParallaxY = 0;
+    let parallaxX = 0;
+    let parallaxY = 0;
 
     window.addEventListener('mousemove', (e) => {
-      canvasMouseX = e.clientX;
-      canvasMouseY = e.clientY;
+      targetParallaxX = (e.clientX - sWidth / 2) * 0.08;
+      targetParallaxY = (e.clientY - sHeight / 2) * 0.08;
     }, { passive: true });
 
-    window.addEventListener('mouseleave', () => {
-      canvasMouseX = -1000;
-      canvasMouseY = -1000;
-    });
+    class SpaceZoomStar {
+      constructor(randomZ = true) {
+        this.reset(randomZ);
+      }
 
-    class DustParticle {
-      constructor() {
-        this.x = Math.random() * sWidth;
-        this.y = Math.random() * sHeight;
-        this.radius = Math.random() * 1.1 + 0.5;
-        this.vx = (Math.random() - 0.5) * 0.22;
-        this.vy = (Math.random() - 0.5) * 0.22;
-        this.pulsePhase = Math.random() * Math.PI * 2;
-        this.pulseSpeed = Math.random() * 0.02 + 0.008;
-        this.isGold = Math.random() < 0.12;
+      reset(randomZ = false) {
+        this.x = (Math.random() - 0.5) * (sWidth * 2.6);
+        this.y = (Math.random() - 0.5) * (sHeight * 2.6);
+        this.z = randomZ ? Math.random() * MAX_DEPTH + 10 : MAX_DEPTH;
+        this.baseRadius = Math.random() * 0.65 + 0.45;
+        this.twinklePhase = Math.random() * Math.PI * 2;
+        this.twinkleSpeed = Math.random() * 0.02 + 0.015;
+        this.screenX = 0;
+        this.screenY = 0;
+        this.prevX = 0;
+        this.prevY = 0;
+        this.size = 0.6;
+        this.alpha = 0.5;
+        this.visible = false;
       }
 
       update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.pulsePhase += this.pulseSpeed;
+        this.z -= zoomSpeed;
+        this.twinklePhase += this.twinkleSpeed;
 
-        if (canvasMouseX > 0 && canvasMouseY > 0) {
-          const dx = this.x - canvasMouseX;
-          const dy = this.y - canvasMouseY;
-          const distSq = dx * dx + dy * dy;
-          if (distSq < 4900 && distSq > 30) {
-            const force = (1 - distSq / 4900) * 0.35;
-            this.x += (dx > 0 ? 1 : -1) * force;
-            this.y += (dy > 0 ? 1 : -1) * force;
-          }
+        if (this.z <= 12) {
+          this.reset(false);
+          return;
         }
 
-        if (this.x < 0) this.x = sWidth;
-        if (this.x > sWidth) this.x = 0;
-        if (this.y < 0) this.y = sHeight;
-        if (this.y > sHeight) this.y = 0;
+        const focalLength = 390;
+        const scale = focalLength / this.z;
+
+        this.screenX = sWidth / 2 + this.x * scale + parallaxX;
+        this.screenY = sHeight / 2 + this.y * scale + parallaxY;
+
+        if (this.screenX < -20 || this.screenX > sWidth + 20 || this.screenY < -20 || this.screenY > sHeight + 20) {
+          this.visible = false;
+          return;
+        }
+
+        this.visible = true;
+        const depthRatio = 1 - this.z / MAX_DEPTH;
+        this.size = Math.max(0.35, Math.min(1.3, this.baseRadius * (scale * 0.85 + 0.5)));
+        const twinkle = 0.82 + 0.18 * Math.sin(this.twinklePhase);
+        this.alpha = Math.max(0.12, Math.min(0.88, (depthRatio * 0.7 + 0.15) * twinkle));
+
+        if (this.z < 420) {
+          const prevZ = this.z + zoomSpeed * 2.2;
+          const prevScale = focalLength / prevZ;
+          this.prevX = sWidth / 2 + this.x * prevScale + parallaxX;
+          this.prevY = sHeight / 2 + this.y * prevScale + parallaxY;
+        }
       }
     }
 
-    for (let i = 0; i < NUM_DUST; i++) {
-      stardust.push(new DustParticle());
+    for (let i = 0; i < NUM_ZOOM_STARS; i++) {
+      zoomStars.push(new SpaceZoomStar(true));
     }
 
-    // 3. Graceful Shooting Star (Single instance at a time)
-    let shootingStar = null;
-    let nextShootingStarTime = Date.now() + 2500;
-
-    function spawnShootingStar() {
-      const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.15;
-      const speed = Math.random() * 7 + 9;
-      return {
-        x: Math.random() * (sWidth * 0.7),
-        y: Math.random() * (sHeight * 0.35),
-        length: Math.random() * 60 + 50,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        life: 0,
-        maxLife: 35
-      };
-    }
-
-    function renderSpaceAsteroids() {
-      if (!isCanvasAnimRunning || document.hidden) {
-        canvasAnimRAF = null;
+    function renderSpaceZoomBackground() {
+      if (!isSpaceZoomRunning || document.hidden) {
+        spaceZoomRAF = null;
         return;
       }
-      canvasAnimRAF = requestAnimationFrame(renderSpaceAsteroids);
+      spaceZoomRAF = requestAnimationFrame(renderSpaceZoomBackground);
+
       sctx.clearRect(0, 0, sWidth, sHeight);
 
-      // 1. Batched Proximity Constellation Lines (Single beginPath & stroke)
-      sctx.strokeStyle = 'rgba(226, 232, 240, 0.08)';
-      sctx.lineWidth = 0.55;
+      // Smooth parallax easing
+      parallaxX += (targetParallaxX - parallaxX) * 0.04;
+      parallaxY += (targetParallaxY - parallaxY) * 0.04;
+
+      // Update all stars
+      for (let i = 0; i < zoomStars.length; i++) {
+        zoomStars[i].update();
+      }
+
+      // 1. Batched Light Streaks (Zero save/restore calls)
+      sctx.strokeStyle = '#FFFFFF';
+      sctx.lineWidth = 0.65;
       sctx.beginPath();
-      const maxDistSq = 4900; // 70px
-      for (let i = 0; i < stardust.length; i++) {
-        const pi = stardust[i];
-        pi.update();
-        for (let j = i + 1; j < stardust.length; j++) {
-          const pj = stardust[j];
-          const dx = pi.x - pj.x;
-          const dy = pi.y - pj.y;
-          if (dx * dx + dy * dy < maxDistSq) {
-            sctx.moveTo(pi.x, pi.y);
-            sctx.lineTo(pj.x, pj.y);
-          }
+      for (let i = 0; i < zoomStars.length; i++) {
+        const star = zoomStars[i];
+        if (star.visible && star.z < 420) {
+          sctx.moveTo(star.prevX, star.prevY);
+          sctx.lineTo(star.screenX, star.screenY);
         }
       }
+      sctx.globalAlpha = 0.28;
       sctx.stroke();
 
-      // 2. Batched White Stardust (Single fill)
-      sctx.fillStyle = 'rgba(245, 243, 239, 0.48)';
+      // 2. Batched Pinpoint Light Stars (Zero save/restore calls)
+      sctx.fillStyle = '#FFFFFF';
       sctx.beginPath();
-      for (let i = 0; i < stardust.length; i++) {
-        const p = stardust[i];
-        if (!p.isGold) {
-          sctx.moveTo(p.x + p.radius, p.y);
-          sctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      for (let i = 0; i < zoomStars.length; i++) {
+        const star = zoomStars[i];
+        if (star.visible) {
+          sctx.moveTo(star.screenX + star.size, star.screenY);
+          sctx.arc(star.screenX, star.screenY, star.size, 0, Math.PI * 2);
         }
       }
+      sctx.globalAlpha = 0.85;
       sctx.fill();
-
-      // 3. Batched Gold Stardust (Single fill)
-      sctx.fillStyle = 'rgba(255, 201, 0, 0.65)';
-      sctx.beginPath();
-      for (let i = 0; i < stardust.length; i++) {
-        const p = stardust[i];
-        if (p.isGold) {
-          sctx.moveTo(p.x + p.radius, p.y);
-          sctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        }
-      }
-      sctx.fill();
-
-      // 4. Batched Asteroids (Zero save/restore, precomputed trigonometry)
-      for (let i = 0; i < asteroids.length; i++) {
-        const a = asteroids[i];
-        a.update();
-        const cosA = Math.cos(a.angle);
-        const sinA = Math.sin(a.angle);
-        sctx.beginPath();
-        for (let v = 0; v < a.numVertices; v++) {
-          const ang = (v / a.numVertices) * Math.PI * 2;
-          const r = a.radius * a.offsets[v];
-          const lx = Math.cos(ang) * r;
-          const ly = Math.sin(ang) * r;
-          const px = a.x + (lx * cosA - ly * sinA);
-          const py = a.y + (lx * sinA + ly * cosA);
-          if (v === 0) sctx.moveTo(px, py);
-          else sctx.lineTo(px, py);
-        }
-        sctx.closePath();
-        sctx.fillStyle = a.isGold ? 'rgba(255, 201, 0, 0.18)' : 'rgba(148, 163, 184, 0.14)';
-        sctx.strokeStyle = a.isGold ? 'rgba(255, 201, 0, 0.35)' : 'rgba(226, 232, 240, 0.22)';
-        sctx.lineWidth = 0.65;
-        sctx.fill();
-        sctx.stroke();
-      }
-
-      // 5. Shooting Star
-      const now = Date.now();
-      if (!shootingStar && now > nextShootingStarTime) {
-        shootingStar = spawnShootingStar();
-        nextShootingStarTime = now + Math.random() * 3200 + 2600;
-      }
-
-      if (shootingStar) {
-        shootingStar.x += shootingStar.vx;
-        shootingStar.y += shootingStar.vy;
-        shootingStar.life++;
-        const prog = shootingStar.life / shootingStar.maxLife;
-        const alpha = prog < 0.2 ? prog / 0.2 : Math.max(0, 1 - (prog - 0.2) / 0.8);
-
-        if (alpha > 0) {
-          const tailX = shootingStar.x - (shootingStar.vx / 10) * shootingStar.length;
-          const tailY = shootingStar.y - (shootingStar.vy / 10) * shootingStar.length;
-
-          sctx.strokeStyle = `rgba(255, 201, 0, ${(alpha * 0.45).toFixed(2)})`;
-          sctx.lineWidth = 1.1;
-          sctx.beginPath();
-          sctx.moveTo(tailX, tailY);
-          sctx.lineTo(shootingStar.x, shootingStar.y);
-          sctx.stroke();
-
-          sctx.fillStyle = '#FFFFFF';
-          sctx.beginPath();
-          sctx.arc(shootingStar.x, shootingStar.y, 1.2, 0, Math.PI * 2);
-          sctx.fill();
-        }
-
-        if (shootingStar.life >= shootingStar.maxLife) {
-          shootingStar = null;
-        }
-      }
+      sctx.globalAlpha = 1.0;
     }
 
-    function startBackgroundAnimation() {
-      if (isCanvasAnimRunning) return;
-      isCanvasAnimRunning = true;
-      if (!canvasAnimRAF) {
-        renderSpaceAsteroids();
+    function startSpaceZoom() {
+      if (isSpaceZoomRunning) return;
+      isSpaceZoomRunning = true;
+      if (!spaceZoomRAF) {
+        renderSpaceZoomBackground();
       }
     }
-    window.startBackgroundAnimation = startBackgroundAnimation;
-    window.startCelestialSphere = startBackgroundAnimation;
-    window.startSpaceZoom = startBackgroundAnimation;
+    window.startSpaceZoom = startSpaceZoom;
+    window.startBackgroundAnimation = startSpaceZoom;
+    window.startCelestialSphere = startSpaceZoom;
 
+    // Pause when tab is backgrounded to preserve device battery and CPU
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
-        if (canvasAnimRAF) {
-          cancelAnimationFrame(canvasAnimRAF);
-          canvasAnimRAF = null;
+        if (spaceZoomRAF) {
+          cancelAnimationFrame(spaceZoomRAF);
+          spaceZoomRAF = null;
         }
-      } else if (isCanvasAnimRunning && !canvasAnimRAF) {
-        renderSpaceAsteroids();
+      } else if (isSpaceZoomRunning && !spaceZoomRAF) {
+        renderSpaceZoomBackground();
       }
     });
 
-    startBackgroundAnimation();
+    startSpaceZoom();
   }
 
   // ==========================================================================
