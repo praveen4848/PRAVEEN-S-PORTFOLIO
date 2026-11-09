@@ -127,9 +127,17 @@
     </nav>
 
     <div class="header-actions">
-      <!-- Ambient Sound FX Toggle -->
-      <button id="sound-toggle-btn" class="sound-toggle-btn active" title="Toggle Sound FX" aria-label="Toggle Sound FX">
-        <i data-lucide="volume-2" style="width: 15px; height: 15px;"></i>
+      <!-- Master Sound Controller (Tap FX & Video Audio) -->
+      <button id="sound-toggle-btn" class="sound-toggle-btn active" title="Sound: ON (Video & Tap Audio Active)" aria-label="Toggle Sound">
+        <span class="sound-icon-wrap" aria-hidden="true">
+          <i data-lucide="volume-2" id="sound-status-icon" style="width: 14px; height: 14px;"></i>
+        </span>
+        <span class="nav-sound-wave" aria-hidden="true">
+          <span class="sound-wave-bar bar-1"></span>
+          <span class="sound-wave-bar bar-2"></span>
+          <span class="sound-wave-bar bar-3"></span>
+        </span>
+        <span class="sound-toggle-text" id="sound-toggle-text">SOUND ON</span>
       </button>
 
       <!-- Quick Download CV Pill -->

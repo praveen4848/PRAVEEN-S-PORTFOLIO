@@ -234,7 +234,7 @@
       window.portfolioEntered = true;
       const heroVid = document.getElementById('hero-intro-video');
       if (heroVid) {
-        heroVid.muted = false;
+        heroVid.muted = !!window.soundMuted;
         heroVid.volume = 1.0;
         heroVid.play().then(() => {
           if (window.updatePlayBtnUI) window.updatePlayBtnUI(true);

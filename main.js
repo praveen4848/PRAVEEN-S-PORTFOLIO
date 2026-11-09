@@ -21,33 +21,158 @@
 (function () {
   'use strict';
 
-  // Global State
-  window.soundMuted = false;
+  // Global State (Persisted in localStorage)
+  let initialMuted = false;
+  try {
+    initialMuted = localStorage.getItem('praveen_portfolio_sound_muted') === '1';
+  } catch (e) {}
+  window.soundMuted = initialMuted;
+
   let mouseX = window.innerWidth / 2;
   let mouseY = window.innerHeight / 2;
 
   // ==========================================================================
-  // Web Audio FX Engine
+  // Web Audio FX Engine — Tactical UI Tap & Atmospheric Chimes
   // ==========================================================================
-  const audioCtx = window.AudioContext ? new (window.AudioContext || window.webkitAudioContext)() : null;
-  function playClickSound(freq = 540, duration = 0.05) {
-    if (!audioCtx || window.soundMuted) return;
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  let audioCtx = null;
+
+  function initAudioCtx() {
+    if (!audioCtx && AudioContextClass) {
+      try {
+        audioCtx = new AudioContextClass();
+      } catch (e) {}
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+  }
+
+  // Satisfying Acoustic Tactile UI Tap / Click Sound
+  function playTapSound(pitch = 760, duration = 0.04) {
+    if (window.soundMuted) return;
+    initAudioCtx();
+    if (!audioCtx) return;
     try {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
       const now = audioCtx.currentTime;
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
+
+      // Dual-stage transient: crisp high-tech pop descending cleanly
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + duration);
-      gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.frequency.setValueAtTime(pitch, now);
+      osc.frequency.exponentialRampToValueAtTime(160, now + duration);
+
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
       osc.connect(gain);
       gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration);
-    } catch (e) { }
+
+      osc.start(now);
+      osc.stop(now + duration + 0.01);
+    } catch (e) {}
   }
+  window.playTapSound = playTapSound;
+
+  // Harmonic Chime when toggling sound ON / OFF
+  function playChimeSound(unmuting = true) {
+    if (window.soundMuted && !unmuting) return;
+    initAudioCtx();
+    if (!audioCtx) return;
+    try {
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sine';
+      if (unmuting) {
+        // Ascending harmonic chime
+        osc.frequency.setValueAtTime(520, now);
+        osc.frequency.setValueAtTime(880, now + 0.08);
+        gain.gain.setValueAtTime(0.09, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+        osc.start(now);
+        osc.stop(now + 0.28);
+      } else {
+        // Descending mute tone
+        osc.frequency.setValueAtTime(740, now);
+        osc.frequency.setValueAtTime(320, now + 0.06);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.20);
+        osc.start(now);
+        osc.stop(now + 0.20);
+      }
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+    } catch (e) {}
+  }
+
+  function playClickSound(freq = 540, duration = 0.05) {
+    playTapSound(freq, duration);
+  }
+
+  // ==========================================================================
+  // MASTER AUDIO CONTROLLER (Syncs Tap Sound FX & Hero Video Sound)
+  // ==========================================================================
+  function setGlobalSoundMuted(isMuted, playSoundFeedback = false) {
+    window.soundMuted = isMuted;
+
+    // 1. Synchronize Video Audio
+    const heroVideo = document.getElementById('hero-intro-video');
+    if (heroVideo) {
+      heroVideo.muted = isMuted;
+      if (!isMuted) {
+        heroVideo.volume = 1.0;
+      }
+    }
+
+    // Synchronize video equalizer bars on Hero
+    const heroSoundBars = document.getElementById('hero-sound-bars');
+    if (heroSoundBars) {
+      if (isMuted) {
+        heroSoundBars.classList.add('muted');
+      } else {
+        heroSoundBars.classList.remove('muted');
+      }
+    }
+
+    // 2. Synchronize Navbar Sound Button UI
+    const soundToggleBtn = document.getElementById('sound-toggle-btn');
+    if (soundToggleBtn) {
+      soundToggleBtn.classList.toggle('active', !isMuted);
+      soundToggleBtn.classList.toggle('muted', isMuted);
+      soundToggleBtn.setAttribute(
+        'title',
+        isMuted ? 'Sound: MUTED (Click to enable video & tap audio)' : 'Sound: ON (Video & Tap Audio Active)'
+      );
+      soundToggleBtn.setAttribute('aria-label', isMuted ? 'Unmute Sound' : 'Mute Sound');
+
+      const icon = soundToggleBtn.querySelector('#sound-status-icon') || soundToggleBtn.querySelector('i');
+      if (icon) {
+        icon.setAttribute('data-lucide', isMuted ? 'volume-x' : 'volume-2');
+      }
+
+      const textSpan = document.getElementById('sound-toggle-text');
+      if (textSpan) {
+        textSpan.textContent = isMuted ? 'MUTED' : 'SOUND ON';
+      }
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // 3. Persist State
+    try {
+      localStorage.setItem('praveen_portfolio_sound_muted', isMuted ? '1' : '0');
+    } catch (e) {}
+
+    // 4. Auditory Feedback
+    if (playSoundFeedback) {
+      playChimeSound(!isMuted);
+    }
+  }
+  window.setGlobalSoundMuted = setGlobalSoundMuted;
 
   // ==========================================================================
   // 1. SINGLE CELLULAR METALLIC CURSOR (NO CIRCLE)
@@ -131,24 +256,31 @@
     });
   });
 
-  // Sound FX Toggle Button
+  // Master Sound Controller Toggle Button in Navbar (Controls Tap Sound FX + Video Audio)
   const soundToggleBtn = document.getElementById('sound-toggle-btn');
   if (soundToggleBtn) {
-    soundToggleBtn.addEventListener('click', () => {
-      window.soundMuted = !window.soundMuted;
-      soundToggleBtn.classList.toggle('active', !window.soundMuted);
-      const icon = soundToggleBtn.querySelector('i');
-      if (icon) {
-        icon.setAttribute('data-lucide', window.soundMuted ? 'volume-x' : 'volume-2');
-        if (window.lucide) window.lucide.createIcons();
-      }
-      playClickSound(360, 0.08);
+    soundToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setGlobalSoundMuted(!window.soundMuted, true);
     });
   }
 
+  // Universal Tactile Tap Feedback Engine for interactive controls
+  document.addEventListener('pointerdown', (e) => {
+    const interactiveTarget = e.target.closest(
+      'a, button, .nav-link, .editorial-btn, .editorial-card, .project-showcase-card, .soft-skill-card, .flowing-step-card, .tab-btn, .action-pill, .nav-cv-pill, .nav-connect-pill, .cd-launch-pill, .skip-intro-btn, input, textarea, select'
+    );
+    if (interactiveTarget) {
+      playTapSound(760, 0.038);
+    }
+  });
+
+  // Initialize Navbar Sound Button UI with current muted state
+  setGlobalSoundMuted(window.soundMuted, false);
+
   // ==========================================================================
   // HERO PROFILE VIDEO: PLAY / PAUSE & SCROLL CONTROL ENGINE
-  // 1. Plays unmuted ONLY when homepage appears after entering portfolio
+  // 1. Plays unmuted ONLY when homepage appears after entering portfolio (if unmuted)
   // 2. Automatically PAUSES when scrolling down/away from Hero
   // 3. Automatically RESUMES when scrolling back into Hero view
   // 4. Interactive PLAY/PAUSE button with sound equalizer bars
@@ -182,7 +314,7 @@
   if (heroVideo) {
     // Explicitly start paused until user enters the portfolio
     heroVideo.pause();
-    heroVideo.muted = false;
+    heroVideo.muted = !!window.soundMuted;
     heroVideo.volume = 1.0;
     updatePlayBtnUI(false);
 
@@ -191,7 +323,7 @@
       heroVideoPlayBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (heroVideo.paused) {
-          heroVideo.muted = false;
+          heroVideo.muted = !!window.soundMuted;
           heroVideo.volume = 1.0;
           heroVideo.play().then(() => {
             updatePlayBtnUI(true);
@@ -225,6 +357,7 @@
             if (entry.isIntersecting) {
               // Scrolled back into Hero view: resume playing
               if (heroVideo.paused) {
+                heroVideo.muted = !!window.soundMuted;
                 heroVideo.play().then(() => {
                   updatePlayBtnUI(true);
                 }).catch(() => {});
